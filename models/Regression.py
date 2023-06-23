@@ -1,6 +1,6 @@
 from typing import Optional, List
-from K_Fold_Utilities.Raw import loadRawFolds
-from K_Fold_Utilities.Normalized import loadNormFolds
+from k_fold_utilities.Raw import loadRawFolds
+from k_fold_utilities.Normalized import loadNormFolds
 import numpy
 import utils.DimReduction as dr
 from utils.utils_file import mcol
@@ -39,7 +39,7 @@ class LinearRegression(object):
         if pca is None:
             self.pca = [D.shape[0]]
         self.print_flag = flag
-        self.print_file = "data/LinRegression.txt"
+        self.print_file = "data/Results/LinRegression.txt"
         self.lSet = lSet
 
     def lr(self, DTR, LTR, DTE, l, prior_t):
@@ -167,7 +167,7 @@ class QuadraticRegression(object):
         if pca is None:
             self.pca = [D.shape[0]]
         self.print_flag = flag
-        self.print_file = "data/QuadRegression.txt"
+        self.print_file = "data/Results/QuadRegression.txt"
         self.lSet = lSet
 
     def expandFeature(self, dataset):

@@ -2,8 +2,8 @@ from utils.utils_file import mcol, vrow
 import numpy
 import math
 import utils.DimReduction as dr
-from K_Fold_Utilities.Raw import loadRawFolds
-from K_Fold_Utilities.Normalized import loadNormFolds
+from k_fold_utilities.Raw import loadRawFolds
+from k_fold_utilities.Normalized import loadNormFolds
 import utils.ModelEvaluation as me
 from typing import List, Optional
 
@@ -37,7 +37,7 @@ class MultiVariate(object):
         if pca is None:
             self.pca = [D.shape[0]]
         self.print_flag = flag
-        self.print_file = "data/MVG_Full.txt"
+        self.print_file = "data/Results/MVG_Full.txt"
 
     def MultiV(self, DTR, LTR, DTE, prior):
         mu0, C0 = meanAndCovMat(DTR[:, LTR == 0]) #Calcolo media e matrice delle covarianze per ogni classe
@@ -99,7 +99,7 @@ class Tied(object):
         if pca is None:
             self.pca = [D.shape[0]]
         self.print_flag = flag
-        self.print_file = "data/MVG_Tied.txt"
+        self.print_file = "data/Results/MVG_Tied.txt"
 
     def Tied(self, DTR, LTR, DTE, prior):
         mu0, C0 = meanAndCovMat(DTR[:, LTR == 0]) #Calcolo media e matrice delle covarianze per ogni classe
@@ -168,7 +168,7 @@ class Bayes(object):
         if pca is None:
             self.pca = [D.shape[0]]
         self.print_flag = flag
-        self.print_file = "data/MVG_Bayes.txt"
+        self.print_file = "data/Results/MVG_Bayes.txt"
 
     def Bayes(self, DTR, LTR, DTE, prior):
         mu0, C0 = meanAndCovMat(DTR[:, LTR == 0]) #Calcolo media e matrice delle covarianze per ogni classe

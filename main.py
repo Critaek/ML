@@ -1,6 +1,6 @@
 from utils.utils_file import load_train, load_test
-from K_Fold_Utilities.Raw import saveRawFolds, getRawPath, getSavedRawFoldsK
-from K_Fold_Utilities.Normalized import saveNormFolds, getNormPath, getSavedNormFoldsK
+from k_fold_utilities.Raw import saveRawFolds, getRawPath, getSavedRawFoldsK
+from k_fold_utilities.Normalized import saveNormFolds, getNormPath, getSavedNormFoldsK
 import numpy
 from models.MVG import MultiVariate, Tied, Bayes
 from models.Regression import LinearRegression, QuadraticRegression
