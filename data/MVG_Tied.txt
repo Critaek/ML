@@ -1,0 +1,6 @@
+0.5 | 0.1 | Tied | Raw | PCA = 6 | actDCF = 3.847 | MinDCF = 1.0
+0.5 | 0.5 | Tied | Raw | PCA = 6 | actDCF = 0.57 | MinDCF = 0.508
+0.5 | 0.9 | Tied | Raw | PCA = 6 | actDCF = 1.85 | MinDCF = 0.568
+0.5 | 0.1 | Tied | Normalized | PCA = 6 | actDCF = 2.683 | MinDCF = 1.0
+0.5 | 0.5 | Tied | Normalized | PCA = 6 | actDCF = 0.778 | MinDCF = 0.746
+0.5 | 0.9 | Tied | Normalized | PCA = 6 | actDCF = 5.098 | MinDCF = 0.99

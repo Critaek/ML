@@ -1,0 +1,6 @@
+0.5 | 0.1 | Bayes | Raw | PCA = 6 | actDCF = 0.974 | MinDCF = 0.483
+0.5 | 0.5 | Bayes | Raw | PCA = 6 | actDCF = 0.142 | MinDCF = 0.129
+0.5 | 0.9 | Bayes | Raw | PCA = 6 | actDCF = 0.442 | MinDCF = 0.204
+0.5 | 0.1 | Bayes | Normalized | PCA = 6 | actDCF = 1.0 | MinDCF = 0.674
+0.5 | 0.5 | Bayes | Normalized | PCA = 6 | actDCF = 1.0 | MinDCF = 0.277
+0.5 | 0.9 | Bayes | Normalized | PCA = 6 | actDCF = 9.0 | MinDCF = 0.624
