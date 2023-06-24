@@ -4,6 +4,7 @@ from k_fold_utilities.Normalized import saveNormFolds, getNormPath, getSavedNorm
 import numpy
 from models.MVG import MultiVariate, Tied, Bayes
 from models.Regression import LinearRegression, QuadraticRegression
+from models.SVM import SVMLinear, SVMPoly
 import os
 
 K = 3
@@ -24,11 +25,25 @@ if not os.path.exists(getNormPath()) or getSavedNormFoldsK() != K:
 #bayes = Bayes(D, L)
 #bayes.train(0.5)
 
-lSet = numpy.logspace(-5,2, num = 20)
+lSet = numpy.logspace(-5,2, num = 5)
 #lr = LinearRegression(D, L, lSet, flag=False)
 #lr.train(0.5)
 #lr.plot()
 
-qr = QuadraticRegression(D, L, lSet, flag=False)
-qr.train(0.5)
-qr.plot()
+#qr = QuadraticRegression(D, L, lSet, flag=False)
+#qr.train(0.5)
+#qr.plot()
+
+K_Set = numpy.array([0.0, 1.0, 10.0])
+C_Set = numpy.logspace(-2,0, num = 5)
+#svm_lin = SVMLinear(D, L, K_Set, C_Set, flag = False)
+#svm_lin.train(0.5)
+#svm_lin.plot()
+
+K_Set = numpy.array([0.0, 1.0, 10.0])
+C_Set = numpy.logspace(-2,0, num = 10)
+d_Set = numpy.array([2.0, 3.0])
+c_Set = numpy.array([0.0, 1.0])
+svm_poly = SVMPoly(D, L, [1], [0, 0.5, 1], [2], [1], flag=False)
+#svm_poly.train(0.5)
+svm_poly.plot()

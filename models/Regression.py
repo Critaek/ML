@@ -38,6 +38,9 @@ class LinearRegression(object):
         self.normalized = loadNormFolds()
         if pca is None:
             self.pca = [D.shape[0]]
+        else:
+            assert max(pca) <= D.shape[0], f"pca must be smaller than {D.shape[0]}"
+            self.pca = pca
         self.print_flag = flag
         self.print_file = "data/Results/LinRegression.txt"
         self.lSet = lSet
@@ -82,9 +85,9 @@ class LinearRegression(object):
             elements =[elem.strip() for elem in elements] 
             if(float(elements[0]) == 0.5):
                 if(elements[4]=="Normalized"):
-                    normalized.append(( elements[1], float(elements[7][8:]) ))
+                    normalized.append(( elements[1], float(elements[7].split("=")[1]) ))
                 else:
-                    raw.append(( elements[1], float(elements[7][8:]) ))
+                    raw.append(( elements[1], float(elements[7].split("=")[1]) ))
 
         nor = numpy.array(normalized,dtype="float")
         raw = numpy.array(raw,dtype="float")
@@ -124,37 +127,38 @@ class LinearRegression(object):
 
         f = open(self.print_file, 'w')
 
+        hyperparameter_list = [(l, i) for l in self.lSet for i in self.pca]
+
         #print("result[0] = prior_t | result[1] = prior_tilde | result[2] = model_name | result[3] = pre-processing | result[4] = PCA | result[5] = ActDCF | result[6] = MinDCF")
 
-        for l in tqdm(self.lSet, desc="Training LR...", ncols=100):
-            for i in self.pca:
-                LLRs = self.kFold(prior_t, self.raw, l, i)
-                #Score Calibration before estimating DCFs
-                #CalibratedLLRs = sc.calibrate_scores(LLRs, L, prior_t)
+        for l, i in tqdm(hyperparameter_list, desc="Training LR...", ncols=100):
+            LLRs = self.kFold(prior_t, self.raw, l, i)
+            #Score Calibration before estimating DCFs
+            #CalibratedLLRs = sc.calibrate_scores(LLRs, L, prior_t)
 
-                for prior_tilde in prior_tilde_set:
-                    ActDCF, minDCF = me.printDCFs(self.D, self.L, LLRs, prior_tilde)
-                    if self.print_flag:
-                        print(f"{prior_t} | {prior_tilde} | {self.type} | Lambda = {l:.2e} | Raw | Uncalibrated | PCA = {i}" + \
-                              f"| ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
+            for prior_tilde in prior_tilde_set:
+                ActDCF, minDCF = me.printDCFs(self.D, self.L, LLRs, prior_tilde)
+                if self.print_flag:
                     print(f"{prior_t} | {prior_tilde} | {self.type} | Lambda = {l:.2e} | Raw | Uncalibrated | PCA = {i}" + \
-                          f"| ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
-                    #ActDCF, minDCF = me.printDCFs(D, L, CalibratedLLRs, prior_tilde)
-                    #print(prior_t, "|", prior_tilde, "| Linear Regression | Lambda ={:.2e}".format(l), "| Raw | Calibrated | PCA =", pca, "| ActDCF ={0:.3f}".format(ActDCF), "| MinDCF ={0:.3f}".format(minDCF))  
-
-                LLRs = self.kFold(prior_t, self.normalized, l, i)
-                #Score Calibration before estimating DCFs
-                #CalibratedLLRs = sc.calibrate_scores(LLRs, L, prior_t)
-                for prior_tilde in prior_tilde_set:    
-                    ActDCF, minDCF = me.printDCFs(self.D, self.L, LLRs, prior_tilde)
-                    if self.print_flag:
-                        print(f"{prior_t} | {prior_tilde} | {self.type} | Lambda = {l:.2e} | Normalized | Uncalibrated | PCA = {i}" + \
                             f"| ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
+                print(f"{prior_t} | {prior_tilde} | {self.type} | Lambda = {l:.2e} | Raw | Uncalibrated | PCA = {i}" + \
+                        f"| ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
+                #ActDCF, minDCF = me.printDCFs(D, L, CalibratedLLRs, prior_tilde)
+                #print(prior_t, "|", prior_tilde, "| Linear Regression | Lambda ={:.2e}".format(l), "| Raw | Calibrated | PCA =", pca, "| ActDCF ={0:.3f}".format(ActDCF), "| MinDCF ={0:.3f}".format(minDCF))  
+
+            LLRs = self.kFold(prior_t, self.normalized, l, i)
+            #Score Calibration before estimating DCFs
+            #CalibratedLLRs = sc.calibrate_scores(LLRs, L, prior_t)
+            for prior_tilde in prior_tilde_set:    
+                ActDCF, minDCF = me.printDCFs(self.D, self.L, LLRs, prior_tilde)
+                if self.print_flag:
                     print(f"{prior_t} | {prior_tilde} | {self.type} | Lambda = {l:.2e} | Normalized | Uncalibrated | PCA = {i}" + \
-                          f"| ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
-                    
-                    #ActDCF, minDCF = me.printDCFs(D, L, CalibratedLLRs, prior_tilde)
-                    #print(prior_t, "|", prior_tilde, "| Linear Regression | Lambda ={:.2e}".format(l), "| Normalized | Calibrated | PCA =", pca, "| ActDCF ={0:.3f}".format(ActDCF), "| MinDCF ={0:.3f}".format(minDCF))
+                        f"| ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
+                print(f"{prior_t} | {prior_tilde} | {self.type} | Lambda = {l:.2e} | Normalized | Uncalibrated | PCA = {i}" + \
+                        f"| ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
+                
+                #ActDCF, minDCF = me.printDCFs(D, L, CalibratedLLRs, prior_tilde)
+                #print(prior_t, "|", prior_tilde, "| Linear Regression | Lambda ={:.2e}".format(l), "| Normalized | Calibrated | PCA =", pca, "| ActDCF ={0:.3f}".format(ActDCF), "| MinDCF ={0:.3f}".format(minDCF))
 
 
 class QuadraticRegression(object):
@@ -166,6 +170,9 @@ class QuadraticRegression(object):
         self.normalized = loadNormFolds()
         if pca is None:
             self.pca = [D.shape[0]]
+        else:
+            assert max(pca) <= D.shape[0], f"pca must be smaller than {D.shape[0]}"
+            self.pca = pca
         self.print_flag = flag
         self.print_file = "data/Results/QuadRegression.txt"
         self.lSet = lSet
@@ -220,9 +227,9 @@ class QuadraticRegression(object):
             elements =[elem.strip() for elem in elements] 
             if(float(elements[0]) == 0.5):
                 if(elements[4]=="Normalized"):
-                    normalized.append(( elements[1], float(elements[7][8:]) ))
+                    normalized.append(( elements[1], float(elements[7].split("=")[1]) ))
                 else:
-                    raw.append(( elements[1], float(elements[7][8:]) ))
+                    raw.append(( elements[1], float(elements[7].split("=")[1]) ))
 
         nor = numpy.array(normalized,dtype="float")
         raw = numpy.array(raw,dtype="float")
@@ -258,19 +265,24 @@ class QuadraticRegression(object):
 
         f = open(self.print_file, 'w')
 
-        for l in tqdm(self.lSet, desc="Training QR...", ncols=100):
-            for i in self.pca:
-                LLRs = self.kFold(prior_t, self.raw, l, i)
-                for prior_tilde in prior_tilde_set:
-                    ActDCF, minDCF = me.printDCFs(self.D, self.L, LLRs, prior_tilde)
-                    if self.print_flag:    
-                        print(f"{prior_t} | {prior_tilde} | {self.type} | Lambda = {l:.2e} | Raw | PCA = {i} | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
-                    print(f"{prior_t} | {prior_tilde} | {self.type} | Lambda = {l:.2e} | Raw | PCA = {i} | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
+        hyperparameter_list = [(l, i) for l in self.lSet for i in self.pca]
 
-                LLRs = self.kFold(prior_t, self.normalized, l, i)
-                for prior_tilde in prior_tilde_set:    
-                    ActDCF, minDCF = me.printDCFs(self.D, self.L, LLRs, prior_tilde)
-                    if self.print_flag:
-                        print(f"{prior_t} | {prior_tilde} | {self.type} | Lambda = {l:.2e} | Normalized | PCA = {i} | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
-                    print(f"{prior_t} | {prior_tilde} | {self.type} | Lambda = {l:.2e} | Normalized | PCA = {i} | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
+        for l, i in tqdm(hyperparameter_list, desc="Training QR...", ncols=100):
+            LLRs = self.kFold(prior_t, self.raw, l, i)
+            for prior_tilde in prior_tilde_set:
+                ActDCF, minDCF = me.printDCFs(self.D, self.L, LLRs, prior_tilde)
+                if self.print_flag:    
+                    print(f"{prior_t} | {prior_tilde} | {self.type} | Lambda = {l:.2e} | Raw | PCA = {i}" + \
+                          f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
+                print(f"{prior_t} | {prior_tilde} | {self.type} | Lambda = {l:.2e} | Raw | PCA = {i}" + \
+                      f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
+
+            LLRs = self.kFold(prior_t, self.normalized, l, i)
+            for prior_tilde in prior_tilde_set:    
+                ActDCF, minDCF = me.printDCFs(self.D, self.L, LLRs, prior_tilde)
+                if self.print_flag:
+                    print(f"{prior_t} | {prior_tilde} | {self.type} | Lambda = {l:.2e} | Normalized | PCA = {i}" + \
+                          f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
+                print(f"{prior_t} | {prior_tilde} | {self.type} | Lambda = {l:.2e} | Normalized | PCA = {i}" + \
+                      f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
 

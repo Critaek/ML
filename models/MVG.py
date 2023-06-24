@@ -36,6 +36,8 @@ class MultiVariate(object):
         self.normalized = loadNormFolds()
         if pca is None:
             self.pca = [D.shape[0]]
+        else:
+            self.pca = pca
         self.print_flag = flag
         self.print_file = "data/Results/MVG_Full.txt"
 
@@ -98,6 +100,8 @@ class Tied(object):
         self.normalized = loadNormFolds()
         if pca is None:
             self.pca = [D.shape[0]]
+        else:
+            self.pca = pca
         self.print_flag = flag
         self.print_file = "data/Results/MVG_Tied.txt"
 
@@ -167,6 +171,8 @@ class Bayes(object):
         self.normalized = loadNormFolds()
         if pca is None:
             self.pca = [D.shape[0]]
+        else:
+            self.pca = pca
         self.print_flag = flag
         self.print_file = "data/Results/MVG_Bayes.txt"
 
