@@ -299,7 +299,7 @@ class SVMPoly(object):
 
         return LLRs
     
-    def plot(self):7
+    def plot(self):
         print("Plotting SVM Poly results...")
         f = open(self.print_file, "r")
         i_MinDCF = []
