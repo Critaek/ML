@@ -93,6 +93,7 @@ class SVMLinear(object):
         return LLRs
     
     def plot(self):
+        print("PLotting SVM Linears results...")
         f = open(self.print_file, "r")
 
         normalized=[]
@@ -298,7 +299,8 @@ class SVMPoly(object):
 
         return LLRs
     
-    def plot(self):
+    def plot(self):7
+        print("Plotting SVM Poly results...")
         f = open(self.print_file, "r")
         i_MinDCF = []
         lines = []
