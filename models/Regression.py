@@ -73,7 +73,7 @@ class LinearRegression(object):
 
         return LLRs
     
-    def plot(self):
+    def plot(self, flag: Optional[bool] = True):
         print("Plotting LR results...")
         f = open(self.print_file, 'r')
 
@@ -93,10 +93,8 @@ class LinearRegression(object):
         raw = numpy.array(raw,dtype="float")
 
         normalized05=[]
-        normalized09 = []
         normalized01 = []
         raw05=[]
-        raw09 = []
         raw01 = []
 
         for n in nor:
@@ -104,26 +102,24 @@ class LinearRegression(object):
                 normalized05.append(n[1])
             if (float(n[0]) == 0.1):
                 normalized01.append(n[1])
-            if (float(n[0]) == 0.9):
-                normalized09.append(n[1])
         
         for n in raw:
             if(float(n[0]) == 0.5):
                 raw05.append(n[1])
             if (float(n[0]) == 0.1):
                 raw01.append(n[1])
-            if (float(n[0]) == 0.9):
-                raw09.append(n[1])
 
         raw05 = numpy.array(raw05)
         raw01 = numpy.array(raw01)
-        raw09 = numpy.array(raw09)
 
-        plt.plotThreeDCFs(self.lSet, normalized05, normalized09, normalized01, "λ", "Normalized")
-        plt.plotThreeDCFs(self.lSet, raw05, raw09, raw01, "λ", "Raw")
+        norm_plot_file = "data/Plots/LogisticRegression_Norm.png"
+        raw_plot_file = "data/Plots/LogisticRegression_Raw.png"
+
+        plt.plotTwoDCFs(self.lSet, normalized05, normalized01, "λ", "Normalized", norm_plot_file, flag=flag)
+        plt.plotTwoDCFs(self.lSet, raw05, raw01, "λ", "Raw", raw_plot_file, flag=flag)
             
     def train(self, prior_t):
-        prior_tilde_set = [0.1, 0.5, 0.9]
+        prior_tilde_set = [0.1, 0.5]
 
         f = open(self.print_file, 'w')
 
@@ -215,7 +211,7 @@ class QuadraticRegression(object):
 
         return LLRs
     
-    def plot(self):
+    def plot(self, flag: Optional[bool] = True):
         print("Plotting QR results...")
         f = open(self.print_file, 'r')
 
@@ -235,10 +231,8 @@ class QuadraticRegression(object):
         raw = numpy.array(raw,dtype="float")
 
         normalized05=[]
-        normalized09 = []
         normalized01 = []
         raw05=[]
-        raw09 = []
         raw01 = []
 
         for n in nor:
@@ -246,22 +240,21 @@ class QuadraticRegression(object):
                 normalized05.append(n[1])
             if (float(n[0]) == 0.1):
                 normalized01.append(n[1])
-            if (float(n[0]) == 0.9):
-                normalized09.append(n[1])
         
         for n in raw:
             if(float(n[0]) == 0.5):
                 raw05.append(n[1])
             if (float(n[0]) == 0.1):
                 raw01.append(n[1])
-            if (float(n[0]) == 0.9):
-                raw09.append(n[1])
 
-        plt.plotThreeDCFs(self.lSet, normalized05, normalized09, normalized01, "λ", "Normalized")
-        plt.plotThreeDCFs(self.lSet, raw05, raw09, raw01, "λ", "Raw")
+        norm_plot_file = "data/Plots/LogisticRegression_Norm.png"
+        raw_plot_file = "data/Plots/LogisticRegression_Raw.png"
+
+        plt.plotTwoDCFs(self.lSet, normalized05, normalized01, "λ", "Normalized", norm_plot_file, flag=flag)
+        plt.plotTwoDCFs(self.lSet, raw05, raw01, "λ", "Raw", raw_plot_file, flag=flag)
         
     def train(self, prior_t):
-        prior_tilde_set = [0.1, 0.5, 0.9]
+        prior_tilde_set = [0.1, 0.5]
 
         f = open(self.print_file, 'w')
 
