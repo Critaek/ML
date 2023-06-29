@@ -151,9 +151,17 @@ class GMMFull(object):
         raw = []
 
         for line in f:
-            
+            elements = line.split("|")
+            elements =[elem.strip() for elem in elements]
+            if float(float(elements[0]) == 0.5 and elements[4] == "Uncalibrated"):
+                if elements[3] == "Raw":
+                    raw.append(float(elements[7][9:]))
+                if elements[3] == "Normalized":
+                    normalized.append(float(elements[7][9:]))
 
+        save_file = f"data/Plots/GMMFull.png"
 
+        plotHistGMM(self.n_Set, raw, normalized, self.type, filename=save_file, flag=flag)
     
     def train(self):
         prior_tilde_set = [0.1, 0.5]
@@ -161,8 +169,6 @@ class GMMFull(object):
         f = open(self.print_file, "w")
 
         hyperparameter_list = [(int(math.log2(n)), i) for n in self.n_Set for i in self.pca]
-
-        print(hyperparameter_list)
 
         for n, i in tqdm(hyperparameter_list, desc="Training GMM Full...", ncols=100):
             Scores = self.kFold(self.raw, n, i)
@@ -212,3 +218,309 @@ class GMMDiagonal(object):
         self.print_flag = flag
         self.print_file = "data/Results/GMMDiagonal.txt"
 
+    def GMM_EM_Diagonal(self, X, gmm, psi = 0.01):
+        llNew = None
+        llOld = None
+        G = len(gmm)
+        N = X.shape[1]
+
+        while llOld is None or llNew - llOld > 1e-6:
+            llOld = llNew
+            SJ = numpy.zeros((G, N))
+            for g in range(G): #numero componenti
+                SJ[g, :] = logpdf_GAU_ND_Opt(X, gmm[g][1], gmm[g][2]) + numpy.log(gmm[g][0])
+            SM = scipy.special.logsumexp(SJ, axis = 0)
+            llNew = SM.sum() / N
+            P = numpy.exp(SJ - SM)
+            gmmNew = []
+
+            for g in range(G):
+                gamma = P[g, :]
+                Z = gamma.sum()            
+                F = (vrow(gamma)*X).sum(1)
+                S = numpy.dot(X, (vrow(gamma)*X).T)
+                w = Z / N
+                mu = mcol(F / Z)
+                Sigma = S/Z - numpy.dot(mu, mu.T)
+                U, s, _ = numpy.linalg.svd(Sigma)
+                s[s < psi] = psi
+                Sigma = numpy.dot(U, mcol(s) * U.T)
+                
+                #Diagonalizzo
+                Sigma = Sigma * numpy.eye(Sigma.shape[0])
+
+                gmmNew.append((w, mu, Sigma))
+
+            gmm = gmmNew
+
+        return gmm
+    
+    def GMM_LBG_Diagonal(self, X, G, alpha = 0.1):
+        mu, C = meanAndCovMat(X)
+        gmms = []
+        
+        gmms.append((1.0, mu, C))
+        
+        gmms = self.GMM_EM_Diagonal(X, gmms)
+
+        for g in range(G): #G = 2 -> 0, 1
+            newList = []
+            for element in gmms:
+                w = element[0] / 2
+                mu = element[1]
+                C = element[2]
+                U, s, Vh = numpy.linalg.svd(C)
+                d = U[:, 0:1] * s[0]**0.5 * alpha
+                newList.append((w, mu + d, C))
+                newList.append((w, mu - d, C))
+            gmms = self.GMM_EM_Diagonal(X, newList)  
+
+        return gmms 
+    
+    def kFold(self, folds, n, pca): #KModel è il K relativo al modello
+        LLRs = []
+
+        for f in folds:
+            DTR = f[0]
+            LTR = f[1]
+            DTE = f[2]
+            LTE = f[3]
+            P = dr.PCA_P(DTR, pca)
+            DTR = numpy.dot(P.T, DTR)
+            DTE = numpy.dot(P.T, DTE)
+            DTR0 = DTR[:, LTR == 0] # bad wines
+            DTR1 = DTR[:, LTR == 1] # good wines
+            gmm0 = self.GMM_LBG_Diagonal(DTR0, n) #n number of components
+            gmm1 = self.GMM_LBG_Diagonal(DTR1, n) #n number of components
+            LLRsRet = GMM_Scores(DTE, gmm0, gmm1)
+            LLRs.append(LLRsRet)
+        
+        LLRs = numpy.hstack(LLRs)
+
+        return LLRs
+    
+    def plot(self, flag: Optional[bool] = True):
+        print("Plotting GMM Diagonal Results...")
+        f = open(self.print_file, "r")
+
+        normalized = []
+        raw = []
+
+        for line in f:
+            elements = line.split("|")
+            elements =[elem.strip() for elem in elements]
+            if float(float(elements[0]) == 0.5 and elements[4] == "Uncalibrated"):
+                if elements[3] == "Raw":
+                    raw.append(float(elements[7][9:]))
+                if elements[3] == "Normalized":
+                    normalized.append(float(elements[7][9:]))
+
+        save_file = f"data/Plots/GMMDiagonal.png"
+
+        plotHistGMM(self.n_Set, raw, normalized, self.type, filename=save_file, flag=flag)
+    
+    def train(self):
+        prior_tilde_set = [0.1, 0.5]
+
+        f = open(self.print_file, "w")
+
+        hyperparameter_list = [(int(math.log2(n)), i) for n in self.n_Set for i in self.pca]
+
+        for n, i in tqdm(hyperparameter_list, desc="Training GMM Diagonal...", ncols=100):
+            Scores = self.kFold(self.raw, n, i)
+            #Still called LLRs in the printDCFs function, but they are scores with no probabilistic interpretation
+            #We use the same function for every model
+            for prior_tilde in prior_tilde_set: 
+                #CalibratedScores, labels = sc.calibrate_scores(Scores, L, prior_tilde)
+                ActDCF, minDCF = me.printDCFs(self.D, self.L, Scores, prior_tilde)
+                if self.print_flag:
+                    print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Raw | Uncalibrated | PCA = {i}" + \
+                          f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
+                print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Raw | Uncalibrated | PCA = {i}" + \
+                      f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
+                #ActDCF, minDCF = me.printDCFsNoShuffle(D, labels, CalibratedScores, prior_tilde)
+                #print(prior_tilde, "| GMM Full | nComponents =", 2**nComponents, "| Raw | Calibrated | PCA =", i,
+                #            "| ActDCF ={0:.3f}".format(ActDCF), "| MinDCF ={0:.3f}".format(minDCF))
+            
+            Scores = self.kFold(self.normalized, n, i)
+            #Still called LLRs in the printDCFs function, but they are scores with no probabilistic interpretation
+            #We use the same function for every model
+            for prior_tilde in prior_tilde_set: 
+                #CalibratedScores, labels = sc.calibrate_scores(Scores, L, prior_tilde)
+                ActDCF, minDCF = me.printDCFs(self.D, self.L, Scores, prior_tilde)
+                if self.print_flag:
+                    print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Normalized | Uncalibrated | PCA = {i}" + \
+                          f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
+                print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Normalized | Uncalibrated | PCA = {i}" + \
+                      f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
+                #ActDCF, minDCF = me.printDCFsNoShuffle(D, labels, CalibratedScores, prior_tilde)
+                #print(prior_tilde, "| GMM Full | nComponents =", 2**nComponents, "| Raw | Calibrated | PCA =", i,
+                #            "| ActDCF ={0:.3f}".format(ActDCF), "| MinDCF ={0:.3f}".format(minDCF))
+
+class GMMTied(object):
+    def __init__(self, D, L, n_Set, pca: Optional[List[int]] = None, flag: Optional[bool] = True):
+        self.D = D
+        self.L = L
+        self.type = "GMM Tied"
+        self.raw = loadRawFolds()
+        self.normalized = loadNormFolds()
+        self.n_Set = n_Set
+        if pca is None:
+            self.pca = [D.shape[0]]
+        else:
+            assert max(pca) <= D.shape[0], f"pca must be smaller than {D.shape[0]}"
+            self.pca = pca
+        self.print_flag = flag
+        self.print_file = "data/Results/GMMTied.txt"
+
+    def GMM_EM_Tied(self, X, gmm, psi = 0.01):
+        llNew = None
+        llOld = None
+        G = len(gmm)
+        N = X.shape[1]
+
+        while llOld is None or llNew - llOld > 1e-6:
+            llOld = llNew
+            SJ = numpy.zeros((G, N))
+            for g in range(G): #numero componenti
+                SJ[g, :] = logpdf_GAU_ND_Opt(X, gmm[g][1], gmm[g][2]) + numpy.log(gmm[g][0])
+            SM = scipy.special.logsumexp(SJ, axis = 0)
+            llNew = SM.sum() / N
+            P = numpy.exp(SJ - SM)
+            gmmNew = []
+            Z_List = []
+
+            for g in range(G):
+                gamma = P[g, :]
+                Z = gamma.sum()
+
+                Z_List.append(Z)
+                
+                F = (vrow(gamma)*X).sum(1)
+                S = numpy.dot(X, (vrow(gamma)*X).T)
+                w = Z / N
+                mu = mcol(F / Z)
+                Sigma = S/Z - numpy.dot(mu, mu.T)
+                U, s, _ = numpy.linalg.svd(Sigma)
+                s[s < psi] = psi
+                Sigma = numpy.dot(U, mcol(s) * U.T)
+
+                gmmNew.append((w, mu, Sigma))
+
+            #-----------------------Tied-------------------------#
+            gmmTied = []
+            sum = numpy.zeros(gmmNew[0][2].shape)
+
+            for g in range(G):
+                sum = sum + Z_List[g] * gmm[g][2]
+
+            TiedSigma = sum / X.shape[1]
+
+            for g in range(G):
+                gmmTied.append((gmmNew[g][0], gmmNew[g][1], TiedSigma))
+
+            gmm = gmmTied
+
+        return gmm
+    
+    def GMM_LBG_Tied(self, X, G, alpha = 0.1):
+        mu, C = meanAndCovMat(X)
+        gmms = []
+        
+        gmms.append((1.0, mu, C))
+        
+        gmms = self.GMM_EM_Tied(X, gmms)
+
+        for g in range(G): #G = 2 -> 0, 1
+            newList = []
+            for element in gmms:
+                w = element[0] / 2
+                mu = element[1]
+                C = element[2]
+                U, s, Vh = numpy.linalg.svd(C)
+                d = U[:, 0:1] * s[0]**0.5 * alpha
+                newList.append((w, mu + d, C))
+                newList.append((w, mu - d, C))
+            gmms = self.GMM_EM_Tied(X, newList)  
+
+        return gmms 
+    
+    def kFold(self, folds, n, pca): #KModel è il K relativo al modello
+        LLRs = []
+
+        for f in folds:
+            DTR = f[0]
+            LTR = f[1]
+            DTE = f[2]
+            LTE = f[3]
+            P = dr.PCA_P(DTR, pca)
+            DTR = numpy.dot(P.T, DTR)
+            DTE = numpy.dot(P.T, DTE)
+            DTR0 = DTR[:, LTR == 0] # bad wines
+            DTR1 = DTR[:, LTR == 1] # good wines
+            gmm0 = self.GMM_LBG_Tied(DTR0, n) #n number of components
+            gmm1 = self.GMM_LBG_Tied(DTR1, n) #n number of components
+            LLRsRet = GMM_Scores(DTE, gmm0, gmm1)
+            LLRs.append(LLRsRet)
+        
+        LLRs = numpy.hstack(LLRs)
+
+        return LLRs
+    
+    def plot(self, flag: Optional[bool] = True):
+        print("Plotting GMM Tied Results...")
+        f = open(self.print_file, "r")
+
+        normalized = []
+        raw = []
+
+        for line in f:
+            elements = line.split("|")
+            elements =[elem.strip() for elem in elements]
+            if float(float(elements[0]) == 0.5 and elements[4] == "Uncalibrated"):
+                if elements[3] == "Raw":
+                    raw.append(float(elements[7][9:]))
+                if elements[3] == "Normalized":
+                    normalized.append(float(elements[7][9:]))
+
+        save_file = f"data/Plots/GMMTied.png"
+
+        plotHistGMM(self.n_Set, raw, normalized, self.type, filename=save_file, flag=flag)
+    
+    def train(self):
+        prior_tilde_set = [0.1, 0.5]
+
+        f = open(self.print_file, "w")
+
+        hyperparameter_list = [(int(math.log2(n)), i) for n in self.n_Set for i in self.pca]
+
+        for n, i in tqdm(hyperparameter_list, desc="Training GMM Tied...", ncols=100):
+            Scores = self.kFold(self.raw, n, i)
+            #Still called LLRs in the printDCFs function, but they are scores with no probabilistic interpretation
+            #We use the same function for every model
+            for prior_tilde in prior_tilde_set: 
+                #CalibratedScores, labels = sc.calibrate_scores(Scores, L, prior_tilde)
+                ActDCF, minDCF = me.printDCFs(self.D, self.L, Scores, prior_tilde)
+                if self.print_flag:
+                    print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Raw | Uncalibrated | PCA = {i}" + \
+                          f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
+                print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Raw | Uncalibrated | PCA = {i}" + \
+                      f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
+                #ActDCF, minDCF = me.printDCFsNoShuffle(D, labels, CalibratedScores, prior_tilde)
+                #print(prior_tilde, "| GMM Full | nComponents =", 2**nComponents, "| Raw | Calibrated | PCA =", i,
+                #            "| ActDCF ={0:.3f}".format(ActDCF), "| MinDCF ={0:.3f}".format(minDCF))
+            
+            Scores = self.kFold(self.normalized, n, i)
+            #Still called LLRs in the printDCFs function, but they are scores with no probabilistic interpretation
+            #We use the same function for every model
+            for prior_tilde in prior_tilde_set: 
+                #CalibratedScores, labels = sc.calibrate_scores(Scores, L, prior_tilde)
+                ActDCF, minDCF = me.printDCFs(self.D, self.L, Scores, prior_tilde)
+                if self.print_flag:
+                    print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Normalized | Uncalibrated | PCA = {i}" + \
+                          f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
+                print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Normalized | Uncalibrated | PCA = {i}" + \
+                      f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
+                #ActDCF, minDCF = me.printDCFsNoShuffle(D, labels, CalibratedScores, prior_tilde)
+                #print(prior_tilde, "| GMM Full | nComponents =", 2**nComponents, "| Raw | Calibrated | PCA =", i,
+                #            "| ActDCF ={0:.3f}".format(ActDCF), "| MinDCF ={0:.3f}".format(minDCF))

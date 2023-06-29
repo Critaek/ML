@@ -5,7 +5,7 @@ import numpy
 from models.MVG import MultiVariate, Tied, Bayes
 from models.Regression import LinearRegression, QuadraticRegression
 from models.SVM import SVMLinear, SVMPoly, SVMRBF
-from models.GMM import GMMFull
+from models.GMM import GMMFull, GMMDiagonal, GMMTied
 from utils.Plot import plotHist, HeatMapPearson
 import os
 
@@ -24,13 +24,13 @@ if not os.path.exists(getRawPath()) or getSavedRawFoldsK() != K:
 if not os.path.exists(getNormPath()) or getSavedNormFoldsK() != K:
     saveNormFolds(D, L, K)
 
-#Full = MultiVariate(D, L)
-#Full.train(0.5)
+full = MultiVariate(D, L)
+#full.train(0.5)
 
-#tied = Tied(D, L)
+tied = Tied(D, L)
 #tied.train(0.5)
 
-#bayes = Bayes(D, L)
+bayes = Bayes(D, L)
 #bayes.train(0.5)
 
 lSet = numpy.logspace(-5,2, num = 5)
@@ -53,12 +53,21 @@ C_Set = numpy.logspace(-2,0, num = 5)
 d_Set = numpy.array([2.0, 3.0])
 c_Set = numpy.array([0.0, 1.0])
 svm_poly = SVMPoly(D, L, [1], C_Set, [3], [1], flag=False)
-svm_poly.train(0.5)
-svm_poly.plot()
+#svm_poly.train(0.5)
+#svm_poly.plot()
 
 svm_rbf = SVMRBF(D, L, [1], [1], [1e-1])
 #svm_rbf.train(0.5)
 #svm_rbf.plot()
 
-gmm_full = GMMFull(D, L, [1, 2])
+gmm_full = GMMFull(D, L, [1, 2, 4], flag=False)
 #gmm_full.train()
+gmm_full.plot(False)
+
+gmm_diagonal = GMMDiagonal(D, L, [1, 2, 4], flag=True)
+#gmm_diagonal.train()
+gmm_diagonal.plot(False)
+
+gmm_tied = GMMTied(D, L, [1, 2, 4], flag=True)
+#gmm_tied.train()
+gmm_tied.plot(False)

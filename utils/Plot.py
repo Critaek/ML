@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy
 import scipy.stats as st
 from typing import Optional
+import math
 
 def plotHist(D, L, string):
     #Ogni riga della matrice è una feature
@@ -85,19 +86,25 @@ def plotThreeDCFsRBF(x, y1, y2, y3, variabile, type, filename: Optional[str] = N
 
     plt.show()
 
-def plotHistGMM(x, y1, y2, type):
+def plotHistGMM(x, y1, y2, type, filename: Optional[str] = None, flag: Optional[bool] = True):
     f, ax = plt.subplots()
 
     width = 0.35
 
+    x = numpy.array([int(math.log2(x)) for x in x])
+
     ax.bar(x - width/2, y1, width)
     ax.bar(x + width/2, y2, width)
     labels = 2**x
-    labels = numpy.insert(labels, 0, 0)
+    ax.set_xticks(x)
     ax.set_xticklabels(labels)
     ax.legend(["Raw", "Normalized"])
 
     ax.set_xlabel("GMM Components")
     ax.set_ylabel("Min DCF " + type)
 
-    plt.show()
+    if filename is not None:
+        plt.savefig(filename)
+
+    if flag:
+        plt.show()
