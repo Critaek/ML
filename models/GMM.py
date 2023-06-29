@@ -7,6 +7,7 @@ import math
 import utils.DimReduction as dr
 from utils.utils_file import vrow, mcol
 import utils.ModelEvaluation as me
+from utils.Plot import plotHistGMM
 from tqdm import tqdm
 
 def meanAndCovMat(X):
@@ -142,8 +143,20 @@ class GMMFull(object):
 
         return LLRs
     
+    def plot(self, flag: Optional[bool] = True):
+        print("Plotting GMM Full Results...")
+        f = open(self.print_file, "r")
+
+        normalized = []
+        raw = []
+
+        for line in f:
+            
+
+
+    
     def train(self):
-        prior_tilde_set = [0.1, 0.5, 0.9]
+        prior_tilde_set = [0.1, 0.5]
 
         f = open(self.print_file, "w")
 
@@ -181,18 +194,21 @@ class GMMFull(object):
                 #ActDCF, minDCF = me.printDCFsNoShuffle(D, labels, CalibratedScores, prior_tilde)
                 #print(prior_tilde, "| GMM Full | nComponents =", 2**nComponents, "| Raw | Calibrated | PCA =", i,
                 #            "| ActDCF ={0:.3f}".format(ActDCF), "| MinDCF ={0:.3f}".format(minDCF))
-        
-        """
-        for nComponents in nSet:
-            Scores = kFold_GMM_Full(K_Fold.loadNormFolds, nComponents, pca)
-            #Still called LLRs in the printDCFs function, but they are scores with no probabilistic interpretation
-            #We use the same function for every model
-            for prior_tilde in prior_tilde_set: 
-                CalibratedScores, labels = sc.calibrate_scores(Scores, L, prior_tilde)
-                ActDCF, minDCF = me.printDCFs(D, L, Scores, prior_tilde)
-                print(prior_tilde, "| GMM Full | nComponents =", 2**nComponents, "| Normalized | Uncalibrated | PCA =", pca,
-                            "| ActDCF ={0:.3f}".format(ActDCF), "| MinDCF ={0:.3f}".format(minDCF))
-                ActDCF, minDCF = me.printDCFsNoShuffle(D, labels, CalibratedScores, prior_tilde)
-                print(prior_tilde, "| GMM Full | nComponents =", 2**nComponents, "| Normalized | Calibrated | PCA =", pca,
-                            "| ActDCF ={0:.3f}".format(ActDCF), "| MinDCF ={0:.3f}".format(minDCF))
-        """
+
+
+class GMMDiagonal(object):
+    def __init__(self, D, L, n_Set, pca: Optional[List[int]] = None, flag: Optional[bool] = True):
+        self.D = D
+        self.L = L
+        self.type = "GMM Diagonal"
+        self.raw = loadRawFolds()
+        self.normalized = loadNormFolds()
+        self.n_Set = n_Set
+        if pca is None:
+            self.pca = [D.shape[0]]
+        else:
+            assert max(pca) <= D.shape[0], f"pca must be smaller than {D.shape[0]}"
+            self.pca = pca
+        self.print_flag = flag
+        self.print_file = "data/Results/GMMDiagonal.txt"
+
