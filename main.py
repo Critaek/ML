@@ -17,7 +17,6 @@ plot_path = f"data/Plots/"
 #plotHist(D, L, plot_path)
 #HeatMapPearson(D, plot_path)
 
-
 if not os.path.exists(getRawPath()) or getSavedRawFoldsK() != K:
     saveRawFolds(D, L, K)
 
@@ -44,8 +43,8 @@ qr = QuadraticRegression(D, L, lSet, flag=False)
 
 K_Set = numpy.array([0.0, 1.0, 10.0])
 C_Set = numpy.logspace(-2,0, num = 5)
-svm_lin = SVMLinear(D, L, K_Set, C_Set, flag = False)
-#svm_lin.train(0.5)
+svm_lin = SVMLinear(D, L, K_Set, C_Set, flag = True)
+svm_lin.train(0.5)
 #svm_lin.plot(False)
 
 K_Set = numpy.array([0.0, 1.0, 10.0])
@@ -62,12 +61,12 @@ svm_rbf = SVMRBF(D, L, [1], [1], [1e-1])
 
 gmm_full = GMMFull(D, L, [1, 2, 4], flag=False)
 #gmm_full.train()
-gmm_full.plot(False)
+#gmm_full.plot(False)
 
 gmm_diagonal = GMMDiagonal(D, L, [1, 2, 4], flag=True)
 #gmm_diagonal.train()
-gmm_diagonal.plot(False)
+#gmm_diagonal.plot(False)
 
 gmm_tied = GMMTied(D, L, [1, 2, 4], flag=True)
 #gmm_tied.train()
-gmm_tied.plot(False)
+#gmm_tied.plot(False)

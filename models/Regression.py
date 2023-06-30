@@ -3,7 +3,7 @@ from k_fold_utilities.Raw import loadRawFolds
 from k_fold_utilities.Normalized import loadNormFolds
 import numpy
 import utils.DimReduction as dr
-from utils.utils_file import mcol
+from utils.utils_file import mcol, vrow
 import scipy.optimize
 import utils.ModelEvaluation as me
 import utils.Plot as plt
@@ -28,6 +28,23 @@ def logreg_obj(v, DTR, LTR, l, prior):
     cxeT = numpy.logaddexp(0, -Z1*S1).sum() * prior / NT
 
     return l/2 * numpy.linalg.norm(w)**2 + cxeT + cxeF
+
+def logreg_obj_w_b(v, score, labels, l):
+    w, b = mcol(v[0:-1]), v[-1]
+    Z = labels * 2.0 - 1.0
+    score = vrow(score)
+    S = numpy.dot(w.T, score) + b
+    cxe = numpy.logaddexp(0, -Z*S).mean()
+    return l/2 * numpy.linalg.norm(w)**2 + cxe
+
+def LogisticRegression_w_b(score, labels, l):
+    x0 = numpy.zeros(1 + 1)
+    x, f, d = scipy.optimize.fmin_l_bfgs_b(logreg_obj_w_b, x0, args=(score, labels, l), approx_grad = True,
+                                            maxfun = 15000, factr=1.0)
+    w = x[0:-1]
+    b = x[-1]
+
+    return w, b
 
 class LinearRegression(object):
     def __init__(self, D, L, lSet,  pca: Optional[List[int]] = None, flag: Optional[bool] = True):
@@ -112,8 +129,8 @@ class LinearRegression(object):
         raw05 = numpy.array(raw05)
         raw01 = numpy.array(raw01)
 
-        norm_plot_file = "data/Plots/LogisticRegression_Norm.png"
-        raw_plot_file = "data/Plots/LogisticRegression_Raw.png"
+        norm_plot_file = "data/Plots/LinRegression_Norm.png"
+        raw_plot_file = "data/Plots/LinRegression_Raw.png"
 
         plt.plotTwoDCFs(self.lSet, normalized05, normalized01, "λ", "Normalized", norm_plot_file, flag=flag)
         plt.plotTwoDCFs(self.lSet, raw05, raw01, "λ", "Raw", raw_plot_file, flag=flag)
@@ -247,8 +264,8 @@ class QuadraticRegression(object):
             if (float(n[0]) == 0.1):
                 raw01.append(n[1])
 
-        norm_plot_file = "data/Plots/LogisticRegression_Norm.png"
-        raw_plot_file = "data/Plots/LogisticRegression_Raw.png"
+        norm_plot_file = "data/Plots/QuadraticRegression_Norm.png"
+        raw_plot_file = "data/Plots/QuadraticRegression_Raw.png"
 
         plt.plotTwoDCFs(self.lSet, normalized05, normalized01, "λ", "Normalized", norm_plot_file, flag=flag)
         plt.plotTwoDCFs(self.lSet, raw05, raw01, "λ", "Raw", raw_plot_file, flag=flag)
