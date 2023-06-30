@@ -99,13 +99,13 @@ def printDCFs(D, L, LLRs, pi_tilde):
     for score in comm:
         
         Predicions_By_Score = PredicionsByScore(score, LLRs)
-        wine_labels = L
+        labels = L
         
         confusionMatrix = numpy.zeros((2, 2))
 
         for i in range(0,len(classPriors)):
             for j in range(0,len(classPriors)):
-                confusionMatrix[i,j] = ((wine_labels == j) * (Predicions_By_Score == i)).sum()
+                confusionMatrix[i,j] = ((labels == j) * (Predicions_By_Score == i)).sum()
 
         (DCFu,FPRi,TPRi) = BiasRisk(pi1,Cfn,Cfp,confusionMatrix)
         
@@ -147,13 +147,13 @@ def printDCFsNoShuffle(D, L, LLRs, pi_tilde):
     for score in comm:
         
         Predicions_By_Score = PredicionsByScore(score, LLRs)
-        wine_labels = L
+        labels = L
         
         confusionMatrix = numpy.zeros((2, 2))
 
         for i in range(0,len(classPriors)):
             for j in range(0,len(classPriors)):
-                confusionMatrix[i,j] = ((wine_labels == j) * (Predicions_By_Score == i)).sum()
+                confusionMatrix[i,j] = ((labels == j) * (Predicions_By_Score == i)).sum()
 
         (DCFu,FPRi,TPRi) = BiasRisk(pi1,Cfn,Cfp,confusionMatrix)
         

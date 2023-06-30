@@ -9,6 +9,7 @@ from utils.utils_file import vrow, mcol
 import utils.ModelEvaluation as me
 from utils.Plot import plotHistGMM
 from tqdm import tqdm
+from utils.Calibration import calibrateScores
 
 def meanAndCovMat(X):
     N = X.shape[1]
@@ -172,34 +173,38 @@ class GMMFull(object):
 
         for n, i in tqdm(hyperparameter_list, desc="Training GMM Full...", ncols=100):
             Scores = self.kFold(self.raw, n, i)
-            #Still called LLRs in the printDCFs function, but they are scores with no probabilistic interpretation
-            #We use the same function for every model
             for prior_tilde in prior_tilde_set: 
-                #CalibratedScores, labels = sc.calibrate_scores(Scores, L, prior_tilde)
+                CalibratedScores, labels = calibrateScores(Scores, self.L, prior_tilde)
                 ActDCF, minDCF = me.printDCFs(self.D, self.L, Scores, prior_tilde)
                 if self.print_flag:
                     print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Raw | Uncalibrated | PCA = {i}" + \
                           f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
                 print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Raw | Uncalibrated | PCA = {i}" + \
                       f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
-                #ActDCF, minDCF = me.printDCFsNoShuffle(D, labels, CalibratedScores, prior_tilde)
-                #print(prior_tilde, "| GMM Full | nComponents =", 2**nComponents, "| Raw | Calibrated | PCA =", i,
-                #            "| ActDCF ={0:.3f}".format(ActDCF), "| MinDCF ={0:.3f}".format(minDCF))
+                ActDCF, minDCF = me.printDCFsNoShuffle(self.D, labels, CalibratedScores, prior_tilde)
+                if self.print_flag:
+                    print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Raw | Calibrated | PCA = {i}" + \
+                          f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
+                print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Raw | Calibrated | PCA = {i}" + \
+                      f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
             
             Scores = self.kFold(self.normalized, n, i)
             #Still called LLRs in the printDCFs function, but they are scores with no probabilistic interpretation
             #We use the same function for every model
             for prior_tilde in prior_tilde_set: 
-                #CalibratedScores, labels = sc.calibrate_scores(Scores, L, prior_tilde)
+                CalibratedScores, labels = calibrateScores(Scores, self.L, prior_tilde)
                 ActDCF, minDCF = me.printDCFs(self.D, self.L, Scores, prior_tilde)
                 if self.print_flag:
                     print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Normalized | Uncalibrated | PCA = {i}" + \
                           f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
                 print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Normalized | Uncalibrated | PCA = {i}" + \
                       f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
-                #ActDCF, minDCF = me.printDCFsNoShuffle(D, labels, CalibratedScores, prior_tilde)
-                #print(prior_tilde, "| GMM Full | nComponents =", 2**nComponents, "| Raw | Calibrated | PCA =", i,
-                #            "| ActDCF ={0:.3f}".format(ActDCF), "| MinDCF ={0:.3f}".format(minDCF))
+                ActDCF, minDCF = me.printDCFsNoShuffle(self.D, labels, CalibratedScores, prior_tilde)
+                if self.print_flag:
+                    print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Normalized | Calibrated | PCA = {i}" + \
+                          f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
+                print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Normalized | Calibrated | PCA = {i}" + \
+                      f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
 
 
 class GMMDiagonal(object):
@@ -328,34 +333,36 @@ class GMMDiagonal(object):
 
         for n, i in tqdm(hyperparameter_list, desc="Training GMM Diagonal...", ncols=100):
             Scores = self.kFold(self.raw, n, i)
-            #Still called LLRs in the printDCFs function, but they are scores with no probabilistic interpretation
-            #We use the same function for every model
             for prior_tilde in prior_tilde_set: 
-                #CalibratedScores, labels = sc.calibrate_scores(Scores, L, prior_tilde)
+                CalibratedScores, labels = calibrateScores(Scores, self.L, prior_tilde)
                 ActDCF, minDCF = me.printDCFs(self.D, self.L, Scores, prior_tilde)
                 if self.print_flag:
                     print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Raw | Uncalibrated | PCA = {i}" + \
                           f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
                 print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Raw | Uncalibrated | PCA = {i}" + \
                       f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
-                #ActDCF, minDCF = me.printDCFsNoShuffle(D, labels, CalibratedScores, prior_tilde)
-                #print(prior_tilde, "| GMM Full | nComponents =", 2**nComponents, "| Raw | Calibrated | PCA =", i,
-                #            "| ActDCF ={0:.3f}".format(ActDCF), "| MinDCF ={0:.3f}".format(minDCF))
+                ActDCF, minDCF = me.printDCFsNoShuffle(self.D, labels, CalibratedScores, prior_tilde)
+                if self.print_flag:
+                    print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Raw | Calibrated | PCA = {i}" + \
+                          f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
+                print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Raw | Calibrated | PCA = {i}" + \
+                      f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
             
             Scores = self.kFold(self.normalized, n, i)
-            #Still called LLRs in the printDCFs function, but they are scores with no probabilistic interpretation
-            #We use the same function for every model
             for prior_tilde in prior_tilde_set: 
-                #CalibratedScores, labels = sc.calibrate_scores(Scores, L, prior_tilde)
+                CalibratedScores, labels = sc.calibrate_scores(Scores, self.L, prior_tilde)
                 ActDCF, minDCF = me.printDCFs(self.D, self.L, Scores, prior_tilde)
                 if self.print_flag:
                     print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Normalized | Uncalibrated | PCA = {i}" + \
                           f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
                 print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Normalized | Uncalibrated | PCA = {i}" + \
                       f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
-                #ActDCF, minDCF = me.printDCFsNoShuffle(D, labels, CalibratedScores, prior_tilde)
-                #print(prior_tilde, "| GMM Full | nComponents =", 2**nComponents, "| Raw | Calibrated | PCA =", i,
-                #            "| ActDCF ={0:.3f}".format(ActDCF), "| MinDCF ={0:.3f}".format(minDCF))
+                ActDCF, minDCF = me.printDCFsNoShuffle(self.D, labels, CalibratedScores, prior_tilde)
+                if self.print_flag:
+                    print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Normalized | Calibrated | PCA = {i}" + \
+                          f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
+                print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Normalized | Calibrated | PCA = {i}" + \
+                      f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
 
 class GMMTied(object):
     def __init__(self, D, L, n_Set, pca: Optional[List[int]] = None, flag: Optional[bool] = True):
@@ -496,31 +503,33 @@ class GMMTied(object):
 
         for n, i in tqdm(hyperparameter_list, desc="Training GMM Tied...", ncols=100):
             Scores = self.kFold(self.raw, n, i)
-            #Still called LLRs in the printDCFs function, but they are scores with no probabilistic interpretation
-            #We use the same function for every model
             for prior_tilde in prior_tilde_set: 
-                #CalibratedScores, labels = sc.calibrate_scores(Scores, L, prior_tilde)
+                CalibratedScores, labels = calibrateScores(Scores, self.L, prior_tilde)
                 ActDCF, minDCF = me.printDCFs(self.D, self.L, Scores, prior_tilde)
                 if self.print_flag:
                     print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Raw | Uncalibrated | PCA = {i}" + \
                           f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
                 print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Raw | Uncalibrated | PCA = {i}" + \
                       f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
-                #ActDCF, minDCF = me.printDCFsNoShuffle(D, labels, CalibratedScores, prior_tilde)
-                #print(prior_tilde, "| GMM Full | nComponents =", 2**nComponents, "| Raw | Calibrated | PCA =", i,
-                #            "| ActDCF ={0:.3f}".format(ActDCF), "| MinDCF ={0:.3f}".format(minDCF))
+                ActDCF, minDCF = me.printDCFsNoShuffle(self.D, labels, CalibratedScores, prior_tilde)
+                if self.print_flag:
+                    print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Raw | Calibrated | PCA = {i}" + \
+                          f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
+                print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Raw | Calibrated | PCA = {i}" + \
+                      f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
             
             Scores = self.kFold(self.normalized, n, i)
-            #Still called LLRs in the printDCFs function, but they are scores with no probabilistic interpretation
-            #We use the same function for every model
             for prior_tilde in prior_tilde_set: 
-                #CalibratedScores, labels = sc.calibrate_scores(Scores, L, prior_tilde)
+                CalibratedScores, labels = calibrateScores(Scores, self.L, prior_tilde)
                 ActDCF, minDCF = me.printDCFs(self.D, self.L, Scores, prior_tilde)
                 if self.print_flag:
                     print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Normalized | Uncalibrated | PCA = {i}" + \
                           f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
                 print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Normalized | Uncalibrated | PCA = {i}" + \
                       f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
-                #ActDCF, minDCF = me.printDCFsNoShuffle(D, labels, CalibratedScores, prior_tilde)
-                #print(prior_tilde, "| GMM Full | nComponents =", 2**nComponents, "| Raw | Calibrated | PCA =", i,
-                #            "| ActDCF ={0:.3f}".format(ActDCF), "| MinDCF ={0:.3f}".format(minDCF))
+                ActDCF, minDCF = me.printDCFsNoShuffle(self.D, labels, CalibratedScores, prior_tilde)
+                if self.print_flag:
+                    print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Normalized | Calibrated | PCA = {i}" + \
+                          f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
+                print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Normalized | Calibrated | PCA = {i}" + \
+                      f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
