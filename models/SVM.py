@@ -1,5 +1,5 @@
 from typing import Optional, List
-from k_fold_utilities.Raw import loadRawFolds
+from k_fold_utilities.Raw import loadRawFolds, getShuffledLabels
 from k_fold_utilities.Normalized import loadNormFolds
 from utils.utils_file import vrow, mcol
 import numpy
@@ -13,7 +13,7 @@ from utils.Calibration import calibrateScores
 class SVMLinear(object):
     def __init__(self, D, L, K_Set, C_Set,  pca: Optional[List[int]] = None, flag: Optional[bool] = True):
         self.D = D
-        self.L = L
+        self.L = getShuffledLabels()
         self.type = "SVM Linear"
         self.raw = loadRawFolds()
         self.normalized = loadNormFolds()
@@ -160,7 +160,7 @@ class SVMLinear(object):
                           f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
                 print(f"{prior_t} | {prior_tilde} | {self.type} | K = {K} | C = {C} | Raw | Uncalibrated | PCA = {i}" + \
                       f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
-                ActDCF, minDCF = me.printDCFsNoShuffle(self.D, labels, CalibratedScores, prior_tilde)
+                ActDCF, minDCF = me.printDCFs(self.D, labels, CalibratedScores, prior_tilde)
                 if self.print_flag:
                     print(f"{prior_t} | {prior_tilde} | {self.type} | K = {K} | C = {C} | Raw | Calibrated | PCA = {i}" + \
                           f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
@@ -176,7 +176,7 @@ class SVMLinear(object):
                             f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
                 print(f"{prior_t} | {prior_tilde} | {self.type} | K = {K} | C = {C} | Normalized | Uncalibrated | PCA = {i}" + \
                       f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
-                ActDCF, minDCF = me.printDCFsNoShuffle(self.D, labels, CalibratedScores, prior_tilde) 
+                ActDCF, minDCF = me.printDCFs(self.D, labels, CalibratedScores, prior_tilde) 
                 if self.print_flag:
                     print(f"{prior_t} | {prior_tilde} | {self.type} | K = {K} | C = {C} | Normalized | Calibrated | PCA = {i}" + \
                           f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
@@ -353,11 +353,11 @@ class SVMPoly(object):
                           f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
                 print(f"{prior_t} | {prior_tilde} | {self.type} | K = {K} | C = {C} | d = {d} | c = {c} | Raw | Uncalibrated | PCA = {i}" + \
                       f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
-                ActDCF, minDCF = me.printDCFsNoShuffle(self.D, labels, CalibratedScores, prior_tilde) 
+                ActDCF, minDCF = me.printDCFs(self.D, labels, CalibratedScores, prior_tilde) 
                 if self.print_flag:
-                    print(f"{prior_t} | {prior_tilde} | {self.type} | K = {K} | C = {C} | Raw | Calibrated | PCA = {i}" + \
+                    print(f"{prior_t} | {prior_tilde} | {self.type} | K = {K} | C = {C} | d = {d} | c = {c} | Raw | Calibrated | PCA = {i}" + \
                           f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
-                print(f"{prior_t} | {prior_tilde} | {self.type} | K = {K} | C = {C} | Raw | Calibrated | PCA = {i}" + \
+                print(f"{prior_t} | {prior_tilde} | {self.type} | K = {K} | C = {C} | d = {d} | c = {c} | Raw | Calibrated | PCA = {i}" + \
                       f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
             
             Scores = self.kFold(self.normalized, K, C, d, c, prior_t, i)
@@ -369,11 +369,11 @@ class SVMPoly(object):
                           f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
                 print(f"{prior_t} | {prior_tilde} | {self.type} | K = {K} | C = {C} | d = {d} | c = {c} | Normalized | Uncalibrated | PCA = {i}" + \
                       f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
-                ActDCF, minDCF = me.printDCFsNoShuffle(self.D, labels, CalibratedScores, prior_tilde) 
+                ActDCF, minDCF = me.printDCFs(self.D, labels, CalibratedScores, prior_tilde) 
                 if self.print_flag:
-                    print(f"{prior_t} | {prior_tilde} | {self.type} | K = {K} | C = {C} | Normalized | Calibrated | PCA = {i}" + \
+                    print(f"{prior_t} | {prior_tilde} | {self.type} | K = {K} | C = {C} | d = {d} | c = {c} | Normalized | Calibrated | PCA = {i}" + \
                           f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
-                print(f"{prior_t} | {prior_tilde} | {self.type} | K = {K} | C = {C} | Normalized | Calibrated | PCA = {i}" + \
+                print(f"{prior_t} | {prior_tilde} | {self.type} | K = {K} | C = {C} | d = {d} | c = {c} | Normalized | Calibrated | PCA = {i}" + \
                       f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
 
 
@@ -561,11 +561,11 @@ class SVMRBF(object):
                           f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
                 print(f"{prior_t} | {prior_tilde} | {self.type} | K = {K} | C = {C} | gamma = {gamma} | Raw | Uncalibrated | PCA = {i}" + \
                       f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
-                ActDCF, minDCF = me.printDCFsNoShuffle(self.D, labels, CalibratedScores, prior_tilde) 
+                ActDCF, minDCF = me.printDCFs(self.D, labels, CalibratedScores, prior_tilde) 
                 if self.print_flag:
-                    print(f"{prior_t} | {prior_tilde} | {self.type} | K = {K} | C = {C} | Raw | Calibrated | PCA = {i}" + \
+                    print(f"{prior_t} | {prior_tilde} | {self.type} | K = {K} | C = {C} | gamma = {gamma} | Raw | Calibrated | PCA = {i}" + \
                           f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
-                print(f"{prior_t} | {prior_tilde} | {self.type} | K = {K} | C = {C} | Raw | Calibrated | PCA = {i}" + \
+                print(f"{prior_t} | {prior_tilde} | {self.type} | K = {K} | C = {C} | gamma = {gamma} | Raw | Calibrated | PCA = {i}" + \
                       f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
 
 
@@ -578,9 +578,9 @@ class SVMRBF(object):
                           f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
                 print(f"{prior_t} | {prior_tilde} | {self.type} | K = {K} | C = {C} | gamma = {gamma} | Normalized | Uncalibrated | PCA = {i}" + \
                       f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
-                ActDCF, minDCF = me.printDCFsNoShuffle(self.D, labels, CalibratedScores, prior_tilde) 
+                ActDCF, minDCF = me.printDCFs(self.D, labels, CalibratedScores, prior_tilde) 
                 if self.print_flag:
-                    print(f"{prior_t} | {prior_tilde} | {self.type} | K = {K} | C = {C} | Normalized | Calibrated | PCA = {i}" + \
+                    print(f"{prior_t} | {prior_tilde} | {self.type} | K = {K} | C = {C} | gamma = {gamma} | Normalized | Calibrated | PCA = {i}" + \
                           f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
-                print(f"{prior_t} | {prior_tilde} | {self.type} | K = {K} | C = {C} | Normalized | Calibrated | PCA = {i}" + \
+                print(f"{prior_t} | {prior_tilde} | {self.type} | K = {K} | C = {C} | gamma = {gamma} | Normalized | Calibrated | PCA = {i}" + \
                       f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)

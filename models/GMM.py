@@ -181,7 +181,7 @@ class GMMFull(object):
                           f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
                 print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Raw | Uncalibrated | PCA = {i}" + \
                       f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
-                ActDCF, minDCF = me.printDCFsNoShuffle(self.D, labels, CalibratedScores, prior_tilde)
+                ActDCF, minDCF = me.printDCFs(self.D, labels, CalibratedScores, prior_tilde)
                 if self.print_flag:
                     print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Raw | Calibrated | PCA = {i}" + \
                           f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
@@ -199,7 +199,7 @@ class GMMFull(object):
                           f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
                 print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Normalized | Uncalibrated | PCA = {i}" + \
                       f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
-                ActDCF, minDCF = me.printDCFsNoShuffle(self.D, labels, CalibratedScores, prior_tilde)
+                ActDCF, minDCF = me.printDCFs(self.D, labels, CalibratedScores, prior_tilde)
                 if self.print_flag:
                     print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Normalized | Calibrated | PCA = {i}" + \
                           f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
@@ -341,7 +341,7 @@ class GMMDiagonal(object):
                           f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
                 print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Raw | Uncalibrated | PCA = {i}" + \
                       f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
-                ActDCF, minDCF = me.printDCFsNoShuffle(self.D, labels, CalibratedScores, prior_tilde)
+                ActDCF, minDCF = me.printDCFs(self.D, labels, CalibratedScores, prior_tilde)
                 if self.print_flag:
                     print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Raw | Calibrated | PCA = {i}" + \
                           f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
@@ -350,14 +350,14 @@ class GMMDiagonal(object):
             
             Scores = self.kFold(self.normalized, n, i)
             for prior_tilde in prior_tilde_set: 
-                CalibratedScores, labels = sc.calibrate_scores(Scores, self.L, prior_tilde)
+                CalibratedScores, labels = calibrateScores(Scores, self.L, prior_tilde)
                 ActDCF, minDCF = me.printDCFs(self.D, self.L, Scores, prior_tilde)
                 if self.print_flag:
                     print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Normalized | Uncalibrated | PCA = {i}" + \
                           f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
                 print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Normalized | Uncalibrated | PCA = {i}" + \
                       f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
-                ActDCF, minDCF = me.printDCFsNoShuffle(self.D, labels, CalibratedScores, prior_tilde)
+                ActDCF, minDCF = me.printDCFs(self.D, labels, CalibratedScores, prior_tilde)
                 if self.print_flag:
                     print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Normalized | Calibrated | PCA = {i}" + \
                           f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
@@ -511,7 +511,7 @@ class GMMTied(object):
                           f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
                 print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Raw | Uncalibrated | PCA = {i}" + \
                       f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
-                ActDCF, minDCF = me.printDCFsNoShuffle(self.D, labels, CalibratedScores, prior_tilde)
+                ActDCF, minDCF = me.printDCFs(self.D, labels, CalibratedScores, prior_tilde)
                 if self.print_flag:
                     print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Raw | Calibrated | PCA = {i}" + \
                           f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
@@ -527,7 +527,7 @@ class GMMTied(object):
                           f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
                 print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Normalized | Uncalibrated | PCA = {i}" + \
                       f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
-                ActDCF, minDCF = me.printDCFsNoShuffle(self.D, labels, CalibratedScores, prior_tilde)
+                ActDCF, minDCF = me.printDCFs(self.D, labels, CalibratedScores, prior_tilde)
                 if self.print_flag:
                     print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Normalized | Calibrated | PCA = {i}" + \
                           f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")

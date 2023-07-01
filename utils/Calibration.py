@@ -16,6 +16,8 @@ def calibrateScores(scores, labels, prior_t, seed = 42):
 
     cal_scores = []
 
+    lab = []
+
     var = numpy.log(prior_t/(1-prior_t))
 
     for i in range(K): #K=3 -> 0,1,2
@@ -31,9 +33,11 @@ def calibrateScores(scores, labels, prior_t, seed = 42):
 
         cal_score = alpha * scores_test + beta - var
         cal_scores.append(cal_score)
+        lab.append(labels_test)
 
     cal_scores = numpy.concatenate(cal_scores)
+    lab = numpy.concatenate(lab)
 
-    return cal_scores, labels
+    return cal_scores, lab
 
 

@@ -38,3 +38,14 @@ def getSavedRawFoldsK():
     K = raw.shape[0]
 
     return K
+
+def getShuffledLabels():
+    raw = numpy.load(path, allow_pickle=True)
+
+    labels = []
+
+    for f in raw:
+        LTE = f[3]
+        labels.append(LTE)
+
+    return numpy.concatenate(labels)

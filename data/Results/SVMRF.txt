@@ -1,6 +1,0 @@
-0.5 | 0.1 | SVM RBF | K = 1 | C = 1 | gamma = 0.1 | Raw | Uncalibrated | PCA = 6 | ActDCF = 5.459 | MinDCF = 0.475
-0.5 | 0.5 | SVM RBF | K = 1 | C = 1 | gamma = 0.1 | Raw | Uncalibrated | PCA = 6 | ActDCF = 0.607 | MinDCF = 0.12
-0.5 | 0.9 | SVM RBF | K = 1 | C = 1 | gamma = 0.1 | Raw | Uncalibrated | PCA = 6 | ActDCF = 0.607 | MinDCF = 0.2
-0.5 | 0.1 | SVM RBF | K = 1 | C = 1 | gamma = 0.1 | Normalized | Uncalibrated | PCA = 6 | ActDCF = 1.0 | MinDCF = 1.0
-0.5 | 0.5 | SVM RBF | K = 1 | C = 1 | gamma = 0.1 | Normalized | Uncalibrated | PCA = 6 | ActDCF = 1.0 | MinDCF = 1.0
-0.5 | 0.9 | SVM RBF | K = 1 | C = 1 | gamma = 0.1 | Normalized | Uncalibrated | PCA = 6 | ActDCF = 9.0 | MinDCF = 1.022

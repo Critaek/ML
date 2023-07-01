@@ -2,6 +2,8 @@ import numpy
 
 import matplotlib.pyplot as plt
 
+from k_fold_utilities.Raw import getShuffledLabels
+
 def PredicionsByScore(score, LLRs):
     pred = numpy.zeros(LLRs.shape)
     # HERE WE TRY TO OPTIMIZE THE THRESHOLD USING DIFFERENT VALUES FROM A SET OF TEST SCORES
@@ -67,11 +69,6 @@ def assign_labels(scores, pi, Cfn, Cfp):
 #-------------------------------------------------------------------------------------------------#
 
 def printDCFs(D, L, LLRs, pi_tilde):
-    numpy.random.seed(0)
-    idx = numpy.random.permutation(LLRs.shape[0])
-
-    L = L[idx]
-
     pi1 = pi_tilde
     pi0 = 1- pi_tilde
     Cfn = 1
@@ -116,54 +113,7 @@ def printDCFs(D, L, LLRs, pi_tilde):
     minDCF=min(minDCF)
 
     return ActDCF, minDCF
-#-------------------------------------------------------------------------------------------------#
 
-def printDCFsNoShuffle(D, L, LLRs, pi_tilde):
-
-    pi1 = pi_tilde
-    pi0 = 1- pi_tilde
-    Cfn = 1
-    Cfp = 1
-    classPriors = numpy.array([pi1,pi0]) #[0.5, 0.5]
-    minDCF = []
-
-    #normalizedDCF
-    
-    pred = assign_labels(LLRs, pi_tilde, Cfn, Cfp)
-    confusionMatrix = numpy.zeros((2, 2))
-
-    for i in range(0,len(classPriors)):
-        for j in range(0,len(classPriors)):
-            confusionMatrix[i,j] = ((L == j) * (pred == i)).sum()
-
-    (DCFu,FPRi,TPRi) = BiasRisk(pi1,Cfn,Cfp,confusionMatrix)
-        
-    minDummy = MinDummy(pi1,Cfn,Cfp)
-    ActDCF = DCFu/minDummy
-
-    #minDCF
-    comm = sorted(LLRs) #aggiungere -inf, inf
-
-    for score in comm:
-        
-        Predicions_By_Score = PredicionsByScore(score, LLRs)
-        labels = L
-        
-        confusionMatrix = numpy.zeros((2, 2))
-
-        for i in range(0,len(classPriors)):
-            for j in range(0,len(classPriors)):
-                confusionMatrix[i,j] = ((labels == j) * (Predicions_By_Score == i)).sum()
-
-        (DCFu,FPRi,TPRi) = BiasRisk(pi1,Cfn,Cfp,confusionMatrix)
-        
-        minDummy = MinDummy(pi1,Cfn,Cfp)
-        normalizedDCF = DCFu/minDummy
-        minDCF.append(normalizedDCF)
-
-    minDCF=min(minDCF)
-
-    return ActDCF, minDCF
 #-------------------------------------------------------------------------------------------------#
 
 def BiasErrorPlot(L, pred, scores, pi):

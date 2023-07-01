@@ -1,5 +1,5 @@
 from utils.utils_file import load_train, load_test
-from k_fold_utilities.Raw import saveRawFolds, getRawPath, getSavedRawFoldsK
+from k_fold_utilities.Raw import saveRawFolds, getRawPath, getSavedRawFoldsK, getShuffledLabels
 from k_fold_utilities.Normalized import saveNormFolds, getNormPath, getSavedNormFoldsK
 import numpy
 from models.MVG import MultiVariate, Tied, Bayes
@@ -23,6 +23,8 @@ if not os.path.exists(getRawPath()) or getSavedRawFoldsK() != K:
 if not os.path.exists(getNormPath()) or getSavedNormFoldsK() != K:
     saveNormFolds(D, L, K)
 
+L = getShuffledLabels()
+
 full = MultiVariate(D, L)
 #full.train(0.5)
 
@@ -43,7 +45,7 @@ qr = QuadraticRegression(D, L, lSet, flag=False)
 
 K_Set = numpy.array([0.0, 1.0, 10.0])
 C_Set = numpy.logspace(-2,0, num = 5)
-svm_lin = SVMLinear(D, L, K_Set, C_Set, flag = True)
+svm_lin = SVMLinear(D, L, K_Set, C_Set, flag = False)
 svm_lin.train(0.5)
 #svm_lin.plot(False)
 
@@ -52,18 +54,18 @@ C_Set = numpy.logspace(-2,0, num = 5)
 d_Set = numpy.array([2.0, 3.0])
 c_Set = numpy.array([0.0, 1.0])
 svm_poly = SVMPoly(D, L, [1], C_Set, [3], [1], flag=False)
-#svm_poly.train(0.5)
+svm_poly.train(0.5)
 #svm_poly.plot()
 
 svm_rbf = SVMRBF(D, L, [1], [1], [1e-1])
-#svm_rbf.train(0.5)
+svm_rbf.train(0.5)
 #svm_rbf.plot()
 
 gmm_full = GMMFull(D, L, [1, 2, 4], flag=False)
 #gmm_full.train()
 #gmm_full.plot(False)
 
-gmm_diagonal = GMMDiagonal(D, L, [1, 2, 4], flag=True)
+gmm_diagonal = GMMDiagonal(D, L, [1, 2, 4], flag=False)
 #gmm_diagonal.train()
 #gmm_diagonal.plot(False)
 
