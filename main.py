@@ -36,7 +36,7 @@ tied = Tied(D, L)
 bayes = Bayes(D, L)
 #bayes.train(0.5)
 
-lSet = numpy.logspace(-5,2, num = 5)
+lSet = numpy.logspace(-5,2, num = 10)
 lr = LinearRegression(D, L, lSet, flag=False)
 lr.train(0.5)
 lr.plot(False)
