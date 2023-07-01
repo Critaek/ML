@@ -330,8 +330,8 @@ class SVMPoly(object):
                         if(pi_tilde == 0.1):
                             normalized01.append(minDCF)
 
-        norm_plot_file = f"data/Plots/SVMLinear_{Best_K}_{Best_d}_{Best_c}_Norm.png"
-        raw_plot_file = f"data/Plots/SVMLinear_{Best_K}_{Best_d}_{Best_c}_Raw.png"
+        norm_plot_file = f"data/Plots/SVMPoly_{Best_K}_{Best_d}_{Best_c}_Norm.png"
+        raw_plot_file = f"data/Plots/SVMPoly_{Best_K}_{Best_d}_{Best_c}_Raw.png"
                             
         plt.plotTwoDCFs(self.C_Set, raw05, raw01, "C", "Raw", raw_plot_file, flag=flag)
         plt.plotTwoDCFs(self.C_Set, normalized05, normalized01, "C", "Normalized", norm_plot_file, flag=flag)
@@ -538,8 +538,8 @@ class SVMRBF(object):
                         if(gamma == self.gamma_Set[2]):
                             normalized_gamma_2.append(minDCF)
 
-        norm_plot_file = f"data/Plots/SVMLinear_{Best_K}_{Best_C}_Norm.png"
-        raw_plot_file = f"data/Plots/SVMLinear_{Best_K}_{Best_C}_Raw.png"
+        norm_plot_file = f"data/Plots/SVMRBF_{Best_K}_Norm.png"
+        raw_plot_file = f"data/Plots/SVMRBF_{Best_K}_Raw.png"
 
         plt.plotThreeDCFsRBF(self.C_Set, raw_gamma_0, raw_gamma_1, raw_gamma_2, "C", "Raw", raw_plot_file, flag=flag)
         plt.plotThreeDCFsRBF(self.C_Set, normalized_gamma_0, normalized_gamma_1, normalized_gamma_2, "C", "Normalized", norm_plot_file, flag=flag)

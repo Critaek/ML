@@ -64,27 +64,31 @@ svm_rbf = SVMRBF(D, L, [1], [1], [1e-1])
 #svm_rbf.plot()
 
 
-n_Set = [1,2,4,8,16]
-gmm_full = GMMFull(D, L, [1, 2, 4], flag=True)
+n_Set = [1,2,4]
+gmm_full = GMMFull(D, L, n_Set, flag=True)
 #gmm_full.train()
 #gmm_full.plot(False)
 
-gmm_diagonal = GMMDiagonal(D, L, [1, 2, 4], flag=True)
+gmm_diagonal = GMMDiagonal(D, L, n_Set, flag=True)
 #gmm_diagonal.train()
 #gmm_diagonal.plot(False)
 
-gmm_tied = GMMTied(D, L, [1, 2, 4], flag=True)
+gmm_tied = GMMTied(D, L, n_Set, flag=True)
 #gmm_tied.train()
 #gmm_tied.plot(False)
 
-thread_full = threading.Thread(target=gmm_full.train)
-thread_diagonal = threading.Thread(target=gmm_diagonal.train)
-thread_tied = threading.Thread(target=gmm_tied.train)
+#thread_full = threading.Thread(target=gmm_full.train)
+#thread_diagonal = threading.Thread(target=gmm_diagonal.train)
+#thread_tied = threading.Thread(target=gmm_tied.train)
 
-thread_full.start()
-thread_diagonal.start()
-thread_tied.start()
+#thread_full.start()
+#thread_diagonal.start()
+#thread_tied.start()
 
-thread_full.join()
-thread_diagonal.join()
-thread_tied.join()
+#thread_full.join()
+#thread_diagonal.join()
+#thread_tied.join()
+
+gmm_full.plot(False)
+gmm_diagonal.plot(False)
+gmm_tied.plot(False)
