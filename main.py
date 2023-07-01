@@ -62,7 +62,7 @@ svm_poly.plot(False)
 K_Set = numpy.array([0.0, 1.0, 10.0])
 C_Set = numpy.logspace(-2,0, num = 5)
 gamma_Set = numpy.logspace(-3,-1, num = 3)
-svm_rbf = SVMRBF(D, L, [1], [1], [1e-1])
+svm_rbf = SVMRBF(D, L, K_Set, C_Set, gamma_Set)
 svm_rbf.train(0.5)
 svm_rbf.plot()
 
