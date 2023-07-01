@@ -9,6 +9,8 @@ from models.GMM import GMMFull, GMMDiagonal, GMMTied
 from utils.Plot import plotHist, HeatMapPearson
 import os
 
+import threading
+
 K = 3
 D, L = load_train()
 
@@ -46,7 +48,7 @@ qr = QuadraticRegression(D, L, lSet, flag=False)
 K_Set = numpy.array([0.0, 1.0, 10.0])
 C_Set = numpy.logspace(-2,0, num = 5)
 svm_lin = SVMLinear(D, L, K_Set, C_Set, flag = False)
-svm_lin.train(0.5)
+#svm_lin.train(0.5)
 #svm_lin.plot(False)
 
 K_Set = numpy.array([0.0, 1.0, 10.0])
@@ -54,21 +56,35 @@ C_Set = numpy.logspace(-2,0, num = 5)
 d_Set = numpy.array([2.0, 3.0])
 c_Set = numpy.array([0.0, 1.0])
 svm_poly = SVMPoly(D, L, [1], C_Set, [3], [1], flag=False)
-svm_poly.train(0.5)
+#svm_poly.train(0.5)
 #svm_poly.plot()
 
 svm_rbf = SVMRBF(D, L, [1], [1], [1e-1])
-svm_rbf.train(0.5)
+#svm_rbf.train(0.5)
 #svm_rbf.plot()
 
-gmm_full = GMMFull(D, L, [1, 2, 4], flag=False)
+
+n_Set = [1,2,4,8,16]
+gmm_full = GMMFull(D, L, [1, 2, 4], flag=True)
 #gmm_full.train()
 #gmm_full.plot(False)
 
-gmm_diagonal = GMMDiagonal(D, L, [1, 2, 4], flag=False)
+gmm_diagonal = GMMDiagonal(D, L, [1, 2, 4], flag=True)
 #gmm_diagonal.train()
 #gmm_diagonal.plot(False)
 
 gmm_tied = GMMTied(D, L, [1, 2, 4], flag=True)
 #gmm_tied.train()
 #gmm_tied.plot(False)
+
+thread_full = threading.Thread(target=gmm_full.train)
+thread_diagonal = threading.Thread(target=gmm_diagonal.train)
+thread_tied = threading.Thread(target=gmm_tied.train)
+
+thread_full.start()
+thread_diagonal.start()
+thread_tied.start()
+
+thread_full.join()
+thread_diagonal.join()
+thread_tied.join()
