@@ -28,27 +28,27 @@ if __name__ == "__main__":
     L = getShuffledLabels()
 
     full = MultiVariate(D, L)
-    #full.train(0.5)
+    #full.train()
 
     tied = Tied(D, L)
-    #tied.train(0.5)
+    #tied.train()
 
     bayes = Bayes(D, L)
-    #bayes.train(0.5)
+    #bayes.train()
 
     lSet = numpy.logspace(-5,2, num = 10)
     lr = LinearRegression(D, L, lSet, flag=False)
-    #lr.train(0.5)
+    lr.train(0.1)
     #lr.plot(False)
 
     qr = QuadraticRegression(D, L, lSet, flag=False)
-    #qr.train(0.5)
+    qr.train(0.1)
     #qr.plot(False)
 
     K_Set = numpy.array([0.0, 1.0, 10.0])
     C_Set = numpy.logspace(-2,0, num = 10)
     svm_lin = SVMLinear(D, L, K_Set, C_Set, flag = False)
-    #svm_lin.train(0.5)
+    svm_lin.train(0.1)
     #svm_lin.plot(False)
 
     K_Set = numpy.array([0.0, 1.0, 10.0])
@@ -56,15 +56,15 @@ if __name__ == "__main__":
     d_Set = numpy.array([2.0, 3.0])
     c_Set = numpy.array([0.0, 1.0])
     svm_poly = SVMPoly(D, L, K_Set, C_Set, d_Set, c_Set, flag=False)
-    #svm_poly.train(0.5)
+    svm_poly.train(0.1)
     #svm_poly.plot(False)
 
     K_Set = numpy.array([0.0, 1.0, 10.0])
     C_Set = numpy.logspace(-2,0, num = 5)
     gamma_Set = numpy.logspace(-3,-1, num = 3)
     svm_rbf = SVMRBF(D, L, K_Set, C_Set, gamma_Set, flag=False)
-    #svm_rbf.train(0.5)
-    svm_rbf.plot(False)
+    svm_rbf.train(0.1)
+    #svm_rbf.plot(False)
 
     n_Set = [1,2,4,8,16]
     gmm_full = GMMFull(D, L, n_Set, flag=False)
@@ -80,14 +80,14 @@ if __name__ == "__main__":
     p_diagonal = Process(target=gmm_diagonal.train)
     p_tied = Process(target=gmm_tied.train)
 
-    p_full.start()
-    p_diagonal.start()
-    p_tied.start()
+    #p_full.start()
+    #p_diagonal.start()
+    #p_tied.start()
 
-    p_full.join()
-    p_diagonal.join()
-    p_tied.join()
+    #p_full.join()
+    #p_diagonal.join()
+    #p_tied.join()
 
-    gmm_full.plot(False)
-    gmm_diagonal.plot(False)
-    gmm_tied.plot(False)
+    #gmm_full.plot(False)
+    #gmm_diagonal.plot(False)
+    #gmm_tied.plot(False)
