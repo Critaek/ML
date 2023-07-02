@@ -69,7 +69,7 @@ def plotTwoDCFs(x, y1, y2, variabile, type, filename: Optional[str] = None, flag
     if flag:
         plt.show()
 
-def plotThreeDCFsRBF(x, y1, y2, y3, variabile, type, filename: Optional[str] = None):
+def plotThreeDCFsRBF(x, y1, y2, y3, variabile, type, filename: Optional[str] = None, flag: Optional[bool] = True):
     plt.figure()
     plt.plot(x, y1, label = "0.5", color = "r")
     plt.plot(x, y2, label = "0.1", color = "y")
@@ -84,7 +84,8 @@ def plotThreeDCFsRBF(x, y1, y2, y3, variabile, type, filename: Optional[str] = N
     if filename is not None:
         plt.savefig(filename)
 
-    plt.show()
+    if flag:
+        plt.show()
 
 def plotHistGMM(x, y1, y2, type, filename: Optional[str] = None, flag: Optional[bool] = True):
     f, ax = plt.subplots()
