@@ -10,7 +10,6 @@
 0.5 | 0.5 | SVM Linear | K = 0.0 | C = 0.01 | Normalized | Calibrated | PCA = 6 | ActDCF = 1.0 | MinDCF = 0.67
 0.5 | 0.9 | SVM Linear | K = 0.0 | C = 0.01 | Normalized | Uncalibrated | PCA = 6 | ActDCF = 4.843 | MinDCF = 0.843
 0.5 | 0.9 | SVM Linear | K = 0.0 | C = 0.01 | Normalized | Calibrated | PCA = 6 | ActDCF = 9.0 | MinDCF = 0.824
-<<<<<<< HEAD
 0.5 | 0.1 | SVM Linear | K = 0.0 | C = 0.016681005372000592 | Raw | Uncalibrated | PCA = 6 | ActDCF = 3.26 | MinDCF = 1.0
 0.5 | 0.1 | SVM Linear | K = 0.0 | C = 0.016681005372000592 | Raw | Calibrated | PCA = 6 | ActDCF = 1.0 | MinDCF = 1.0
 0.5 | 0.5 | SVM Linear | K = 0.0 | C = 0.016681005372000592 | Raw | Uncalibrated | PCA = 6 | ActDCF = 0.856 | MinDCF = 0.506
@@ -359,5 +358,3 @@
 0.5 | 0.5 | SVM Linear | K = 10.0 | C = 1.0 | Normalized | Calibrated | PCA = 6 | ActDCF = 1.0 | MinDCF = 0.686
 0.5 | 0.9 | SVM Linear | K = 10.0 | C = 1.0 | Normalized | Uncalibrated | PCA = 6 | ActDCF = 4.708 | MinDCF = 0.904
 0.5 | 0.9 | SVM Linear | K = 10.0 | C = 1.0 | Normalized | Calibrated | PCA = 6 | ActDCF = 9.0 | MinDCF = 0.887
-=======
->>>>>>> 944af13674b244d874d979b52cb60d16d821765b
