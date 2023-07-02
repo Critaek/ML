@@ -59,7 +59,7 @@ class LinearRegression(object):
             assert max(pca) <= D.shape[0], f"pca must be smaller than {D.shape[0]}"
             self.pca = pca
         self.print_flag = flag
-        self.print_file = "data/Results_01/LinRegression.txt"
+        self.print_file = "data/Results_PCA5/Results/LinRegression.txt"
         self.lSet = lSet
 
     def lr(self, DTR, LTR, DTE, l, prior_t):
@@ -187,7 +187,7 @@ class QuadraticRegression(object):
             assert max(pca) <= D.shape[0], f"pca must be smaller than {D.shape[0]}"
             self.pca = pca
         self.print_flag = flag
-        self.print_file = "data/Results_01/QuadRegression.txt"
+        self.print_file = "data/Results_PCA5/Results/QuadRegression.txt"
         self.lSet = lSet
 
     def expandFeature(self, dataset):

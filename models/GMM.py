@@ -65,7 +65,7 @@ class GMMFull(object):
             assert max(pca) <= D.shape[0], f"pca must be smaller than {D.shape[0]}"
             self.pca = pca
         self.print_flag = flag
-        self.print_file = "data/Results/GMMFull.txt"
+        self.print_file = "data/Results_PCA5/Results/GMMFull.txt"
 
     def GMM_EM_Full(self, X, gmm, psi = 0.01):
         llNew = None
@@ -221,7 +221,7 @@ class GMMDiagonal(object):
             assert max(pca) <= D.shape[0], f"pca must be smaller than {D.shape[0]}"
             self.pca = pca
         self.print_flag = flag
-        self.print_file = "data/Results/GMMDiagonal.txt"
+        self.print_file = "data/Results_PCA5/Results/GMMDiagonal.txt"
 
     def GMM_EM_Diagonal(self, X, gmm, psi = 0.01):
         llNew = None
@@ -378,7 +378,7 @@ class GMMTied(object):
             assert max(pca) <= D.shape[0], f"pca must be smaller than {D.shape[0]}"
             self.pca = pca
         self.print_flag = flag
-        self.print_file = "data/Results/GMMTied.txt"
+        self.print_file = "data/Results_PCA5/Results/GMMTied.txt"
 
     def GMM_EM_Tied(self, X, gmm, psi = 0.01):
         llNew = None

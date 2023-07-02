@@ -25,7 +25,7 @@ class SVMLinear(object):
             assert max(pca) <= D.shape[0], f"pca must be smaller than {D.shape[0]}"
             self.pca = pca
         self.print_flag = flag
-        self.print_file = "data/Results_01/SVMLinear.txt"
+        self.print_file = "data/Results_PCA5/Results/SVMLinear.txt"
 
     def SVMLinear(self, DTR, LTR, DTE, LTE, K, C, prior_t):
         expandedD = numpy.vstack([DTR, K * numpy.ones(DTR.shape[1])])
@@ -201,7 +201,7 @@ class SVMPoly(object):
             assert max(pca) <= D.shape[0], f"pca must be smaller than {D.shape[0]}"
             self.pca = pca
         self.print_flag = flag
-        self.print_file = "data/Results_01/SVMPoly.txt"
+        self.print_file = "data/Results_PCA5/Results/SVMPoly.txt"
 
     def SVMPoly(self, DTR, LTR, DTE, LTE, K, C, d, c, prior_t):
         Z = numpy.zeros(LTR.shape)
@@ -394,7 +394,7 @@ class SVMRBF(object):
             assert max(pca) <= D.shape[0], f"pca must be smaller than {D.shape[0]}"
             self.pca = pca
         self.print_flag = flag
-        self.print_file = "data/Results_01/SVMRBF.txt"
+        self.print_file = "data/Results_PCA5/Results/SVMRBF.txt"
 
     def SVM_RBF(self, DTR, LTR, DTE, LTE, K, C, gamma, prior_t):
         Z = numpy.zeros(LTR.shape)
