@@ -66,9 +66,6 @@ if __name__ == "__main__":
     svm_rbf.train(0.1)
     #svm_rbf.plot(False)
 
-    n_Set = [1,2,4,8,16]
-    gmm_full = GMMFull(D, L, n_Set, flag=False)
-
     n_Set = [1,2,4,8,16,32]
     gmm_full = GMMFull(D, L, n_Set, flag=False)
 
