@@ -27,14 +27,14 @@ if __name__ == "__main__":
 
     L = getShuffledLabels()
 
-    full = MultiVariate(D, L)
-    #full.train()
+    full = MultiVariate(D, L, pca = [5,6])
+    full.train()
 
-    tied = Tied(D, L)
-    #tied.train()
+    tied = Tied(D, L, pca = [5,6])
+    tied.train()
 
-    bayes = Bayes(D, L)
-    #bayes.train()
+    bayes = Bayes(D, L, pca = [5,6])
+    bayes.train()
 
     lSet = numpy.logspace(-5,2, num = 10)
     lr = LinearRegression(D, L, lSet, pca=[5], flag=False)
