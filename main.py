@@ -45,17 +45,17 @@ if __name__ == "__main__":
 
     lSet = numpy.logspace(-5,2, num = 10)
     lr = LinearRegression(D, L, lSet, pca=[5], flag=False)
-    lr.train(0.5)
+    #lr.train(0.5)
     #lr.plot(False)
 
     qr = QuadraticRegression(D, L, lSet, pca=[5], flag=False)
-    qr.train(0.5)
+    #qr.train(0.5)
     #qr.plot(False)
 
     K_Set = numpy.array([0.0, 1.0, 10.0])
     C_Set = numpy.logspace(-2,0, num = 10)
     svm_lin = SVMLinear(D, L, K_Set, C_Set, pca=[5], flag = False)
-    svm_lin.train(0.5)
+    #svm_lin.train(0.5)
     #svm_lin.plot(False)
 
     K_Set = numpy.array([0.0, 1.0, 10.0])
@@ -63,7 +63,7 @@ if __name__ == "__main__":
     d_Set = numpy.array([2.0, 3.0])
     c_Set = numpy.array([0.0, 1.0])
     svm_poly = SVMPoly(D, L, K_Set, C_Set, d_Set, c_Set, pca=[5], flag=False)
-    svm_poly.train(0.5)
+    #svm_poly.train(0.5)
     #svm_poly.plot(False)
 
     K_Set = numpy.array([0.0, 1.0, 10.0])
