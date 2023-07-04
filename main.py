@@ -28,17 +28,17 @@ if __name__ == "__main__":
     L = getShuffledLabels()
 
     full = MultiVariate(D, L, pca = [5,6])
-    full.train()
+    #full.train()
 
     tied = Tied(D, L, pca = [5,6])
-    tied.train()
+    #tied.train()
 
     bayes = Bayes(D, L, pca = [5,6])
-    bayes.train()
+    #bayes.train()
 
     lSet = numpy.logspace(-5,2, num = 10)
-    lr = LinearRegression(D, L, lSet, pca=[5], flag=False)
-    #lr.train(0.1)
+    lr = LinearRegression(D, L, lSet, pca=[6], flag=False)
+    #lr.train(0.5)
     #lr.plot(False)
 
     qr = QuadraticRegression(D, L, lSet, pca=[5], flag=False)
@@ -55,8 +55,8 @@ if __name__ == "__main__":
     C_Set = numpy.logspace(-2,0, num = 5)
     d_Set = numpy.array([2.0, 3.0])
     c_Set = numpy.array([0.0, 1.0])
-    svm_poly = SVMPoly(D, L, K_Set, C_Set, d_Set, c_Set, pca=[5], flag=False)
-    #svm_poly.train(0.1)
+    svm_poly = SVMPoly(D, L, K_Set, C_Set, [4.0], c_Set, pca=[5,6], flag=False)
+    svm_poly.train(0.5)
     #svm_poly.plot(False)
 
     K_Set = numpy.array([0.0, 1.0, 10.0])

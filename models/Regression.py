@@ -59,7 +59,7 @@ class LinearRegression(object):
             assert max(pca) <= D.shape[0], f"pca must be smaller than {D.shape[0]}"
             self.pca = pca
         self.print_flag = flag
-        self.print_file = "data/Results_PCA5/Results_01/LinRegression.txt"
+        self.print_file = "data/Results/LinRegression.txt"
         self.lSet = lSet
 
     def lr(self, DTR, LTR, DTE, l, prior_t):
@@ -102,9 +102,9 @@ class LinearRegression(object):
             elements =[elem.strip() for elem in elements] 
             if(float(elements[0]) == 0.5):
                 if(elements[4]=="Normalized"):
-                    normalized.append(( elements[1], float(elements[7].split("=")[1]) ))
+                    normalized.append(( elements[1], float(elements[8].split("=")[1]) ))
                 else:
-                    raw.append(( elements[1], float(elements[7].split("=")[1]) ))
+                    raw.append(( elements[1], float(elements[8].split("=")[1]) ))
 
         nor = numpy.array(normalized,dtype="float")
         raw = numpy.array(raw,dtype="float")
@@ -187,7 +187,7 @@ class QuadraticRegression(object):
             assert max(pca) <= D.shape[0], f"pca must be smaller than {D.shape[0]}"
             self.pca = pca
         self.print_flag = flag
-        self.print_file = "data/Results_PCA5/Results_01/QuadRegression.txt"
+        self.print_file = "data/Results/QuadRegression.txt"
         self.lSet = lSet
 
     def expandFeature(self, dataset):

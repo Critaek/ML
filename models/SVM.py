@@ -25,7 +25,7 @@ class SVMLinear(object):
             assert max(pca) <= D.shape[0], f"pca must be smaller than {D.shape[0]}"
             self.pca = pca
         self.print_flag = flag
-        self.print_file = "data/Results_PCA5/Results_01/SVMLinear.txt"
+        self.print_file = "data/Results_01/SVMLinear.txt"
 
     def SVMLinear(self, DTR, LTR, DTE, LTE, K, C, prior_t):
         expandedD = numpy.vstack([DTR, K * numpy.ones(DTR.shape[1])])
@@ -106,7 +106,7 @@ class SVMLinear(object):
         for line in f:
             elements = line.split("|")
             elements =[elem.strip() for elem in elements]
-            if(float(elements[0]) == 0.5):
+            if(float(elements[0]) == 0.1):
                 if(elements[5]=="Normalized" and elements[6]=="Uncalibrated"):
                     normalized.append(( float(elements[1]), float(elements[9][8:]), float(elements[3][4:]), float(elements[4][4:]) ))
 
@@ -201,7 +201,7 @@ class SVMPoly(object):
             assert max(pca) <= D.shape[0], f"pca must be smaller than {D.shape[0]}"
             self.pca = pca
         self.print_flag = flag
-        self.print_file = "data/Results_PCA5/Results_01/SVMPoly.txt"
+        self.print_file = "data/SVMPoly_4dim.txt"
 
     def SVMPoly(self, DTR, LTR, DTE, LTE, K, C, d, c, prior_t):
         Z = numpy.zeros(LTR.shape)

@@ -35,6 +35,6 @@
 0.5 | 0.1 | Linear Regression | Lambda = 1.67e+01 | Normalized | Uncalibrated | PCA = 6| ActDCF = 3.185 | MinDCF = 1.0
 0.5 | 0.5 | Linear Regression | Lambda = 1.67e+01 | Normalized | Uncalibrated | PCA = 6| ActDCF = 0.854 | MinDCF = 0.644
 0.5 | 0.1 | Linear Regression | Lambda = 1.00e+02 | Raw | Uncalibrated | PCA = 6| ActDCF = 3.859 | MinDCF = 1.0
-0.5 | 0.5 | Linear Regression | Lambda = 1.00e+02 | Raw | Uncalibrated | PCA = 6| ActDCF = 0.529 | MinDCF = 0.487
+0.5 | 0.5 | Linear Regression | Lambda = 1.00e+02 | Raw | Uncalibrated | PCA = 6| ActDCF = 0.529 | MinDCF = 0.486
 0.5 | 0.1 | Linear Regression | Lambda = 1.00e+02 | Normalized | Uncalibrated | PCA = 6| ActDCF = 3.33 | MinDCF = 1.0
 0.5 | 0.5 | Linear Regression | Lambda = 1.00e+02 | Normalized | Uncalibrated | PCA = 6| ActDCF = 0.832 | MinDCF = 0.644
