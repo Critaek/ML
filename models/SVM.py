@@ -201,7 +201,7 @@ class SVMPoly(object):
             assert max(pca) <= D.shape[0], f"pca must be smaller than {D.shape[0]}"
             self.pca = pca
         self.print_flag = flag
-        self.print_file = "data/SVMPoly_4dim.txt"
+        self.print_file = "data/Results_01/SVMPoly.txt"
 
     def SVMPoly(self, DTR, LTR, DTE, LTE, K, C, d, c, prior_t):
         Z = numpy.zeros(LTR.shape)
@@ -292,7 +292,7 @@ class SVMPoly(object):
             MinDCF = elements[11][8:]
             i_MinDCF.append((i, float(elements[0]), MinDCF)) #(indice, prior, mindcf)
         
-        i_MinDCF05 = filter(lambda x: x[1] == 0.5, i_MinDCF)
+        i_MinDCF05 = filter(lambda x: x[1] == 0.1, i_MinDCF)
         MinDCF = min(i_MinDCF05, key = lambda x: x[2])
         #print(MinDCF)
         index = MinDCF[0]
@@ -301,6 +301,7 @@ class SVMPoly(object):
         Best_K = lines[index][3]
         Best_d = lines[index][5]
         Best_c = lines[index][6]
+        #Best_c = "c = 1.0"
         raw05 = []
         raw01 = []
         normalized05 = []
@@ -316,7 +317,7 @@ class SVMPoly(object):
             c = line[6]
             minDCF = float(line[11][8:])
 
-            if (prior_t == 0.5 and Cal == "Uncalibrated"):
+            if (prior_t == 0.1 and Cal == "Uncalibrated"):
                 if (K == Best_K and d == Best_d and c == Best_c):
                     if(DataType == "Raw"):
                         if(pi_tilde == 0.5):
@@ -330,8 +331,8 @@ class SVMPoly(object):
                         if(pi_tilde == 0.1):
                             normalized01.append(minDCF)
 
-        norm_plot_file = f"data/Plots/SVMPoly_{Best_K}_{Best_d}_{Best_c}_Norm.png"
-        raw_plot_file = f"data/Plots/SVMPoly_{Best_K}_{Best_d}_{Best_c}_Raw.png"
+        norm_plot_file = f"data/Plots/SVMPoly_{Best_K}_{Best_d}_{Best_c}_Norm_01.png"
+        raw_plot_file = f"data/Plots/SVMPoly_{Best_K}_{Best_d}_{Best_c}_Raw_01.png"
                             
         plt.plotTwoDCFs(self.C_Set, raw05, raw01, "C", "Raw", raw_plot_file, flag=flag)
         plt.plotTwoDCFs(self.C_Set, normalized05, normalized01, "C", "Normalized", norm_plot_file, flag=flag)
@@ -394,7 +395,7 @@ class SVMRBF(object):
             assert max(pca) <= D.shape[0], f"pca must be smaller than {D.shape[0]}"
             self.pca = pca
         self.print_flag = flag
-        self.print_file = "data/Results_PCA5/Results_01/SVMRBF.txt"
+        self.print_file = "data/Results/SVMRBF.txt"
 
     def SVM_RBF(self, DTR, LTR, DTE, LTE, K, C, gamma, prior_t):
         Z = numpy.zeros(LTR.shape)
@@ -447,7 +448,7 @@ class SVMRBF(object):
         for x_t in DTE.T:
             score = 0
             for i in range(DTR.shape[1]):
-                Dist = numpy.linalg.norm(DTR[:, i] - x_t)
+                Dist = numpy.linalg.norm(DTR[:, i] - x_t)**2
                 Kernel = numpy.exp(- gamma * Dist) + epsilon
                 score += alphaStar[i] * Z[i] * Kernel
             scores.append(score)
@@ -545,7 +546,7 @@ class SVMRBF(object):
         plt.plotThreeDCFsRBF(self.C_Set, normalized_gamma_0, normalized_gamma_1, normalized_gamma_2, "C", "Normalized", norm_plot_file, flag=flag)
     
     def train(self, prior_t):
-        prior_tilde_set = [0.1, 0.5, 0.9]
+        prior_tilde_set = [0.1, 0.5]
 
         f = open(self.print_file, "w")
 

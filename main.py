@@ -56,14 +56,14 @@ if __name__ == "__main__":
     d_Set = numpy.array([2.0, 3.0])
     c_Set = numpy.array([0.0, 1.0])
     svm_poly = SVMPoly(D, L, K_Set, C_Set, [4.0], c_Set, pca=[5,6], flag=False)
-    svm_poly.train(0.5)
+    #svm_poly.train(0.5)
     #svm_poly.plot(False)
 
     K_Set = numpy.array([0.0, 1.0, 10.0])
     C_Set = numpy.logspace(-2,0, num = 5)
     gamma_Set = numpy.logspace(-3,-1, num = 3)
-    svm_rbf = SVMRBF(D, L, K_Set, C_Set, gamma_Set, pca=[5], flag=False)
-    #svm_rbf.train(0.1)
+    svm_rbf = SVMRBF(D, L, K_Set, C_Set, gamma_Set, pca=[5, 6], flag=False)
+    svm_rbf.train(0.5)
     #svm_rbf.plot(False)
 
     n_Set = [1,2,4,8,16,32]
