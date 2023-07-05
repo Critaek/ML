@@ -63,7 +63,7 @@ if __name__ == "__main__":
     C_Set = numpy.logspace(-2,0, num = 5)
     gamma_Set = numpy.logspace(-3,-1, num = 3)
     svm_rbf = SVMRBF(D, L, K_Set, C_Set, gamma_Set, pca=[5, 6], flag=False)
-    svm_rbf.train(0.5)
+    svm_rbf.train(0.1)
     #svm_rbf.plot(False)
 
     n_Set = [1,2,4,8,16,32]
