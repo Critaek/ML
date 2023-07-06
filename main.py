@@ -29,42 +29,56 @@ if __name__ == "__main__":
 
     full = MultiVariate(D, L, pca = [5,6])
     #full.train()
+    #full.evaluate()
 
     tied = Tied(D, L, pca = [5,6])
     #tied.train()
+    #tied.evaluate()
 
     bayes = Bayes(D, L, pca = [5,6])
     #bayes.train()
+    #bayes.evaluate()
 
     lSet = numpy.logspace(-5,2, num = 10)
-    lr = LinearRegression(D, L, lSet, pca=[6], flag=False)
+    lr = LinearRegression(D, L, lSet, pca=[5,6], flag=False)
     #lr.train(0.5)
     #lr.plot(False)
+    #lr.evaluate(0.1)
+    #lr.evaluate(0.5)
 
-    qr = QuadraticRegression(D, L, lSet, pca=[5], flag=False)
+    qr = QuadraticRegression(D, L, lSet, pca=[5,6], flag=False)
     #qr.train(0.1)
     #qr.plot(False)
+    #qr.evaluate(0.1)
+    #qr.evaluate(0.5)
 
     K_Set = numpy.array([0.0, 1.0, 10.0])
     C_Set = numpy.logspace(-2,0, num = 10)
     svm_lin = SVMLinear(D, L, K_Set, C_Set, pca=[5], flag = False)
     #svm_lin.train(0.1)
     #svm_lin.plot(False)
+    #svm_lin.evaluate(0.1)
+    #svm_lin.evaluate(0.5)
+
 
     K_Set = numpy.array([0.0, 1.0, 10.0])
     C_Set = numpy.logspace(-2,0, num = 5)
     d_Set = numpy.array([2.0, 3.0])
     c_Set = numpy.array([0.0, 1.0])
     svm_poly = SVMPoly(D, L, K_Set, C_Set, [4.0], c_Set, pca=[5,6], flag=False)
-    #svm_poly.train(0.5)
+    #svm_poly.train(0.1)
     #svm_poly.plot(False)
+    #svm_poly.evaluate(0.1)
+    #svm_poly.evaluate(0.5)
 
     K_Set = numpy.array([0.0, 1.0, 10.0])
     C_Set = numpy.logspace(-2,0, num = 5)
     gamma_Set = numpy.logspace(-3,-1, num = 3)
     svm_rbf = SVMRBF(D, L, K_Set, C_Set, gamma_Set, pca=[5, 6], flag=False)
-    svm_rbf.train(0.5)
+    #svm_rbf.train(0.5)
     #svm_rbf.plot(False)
+    svm_rbf.evaluate(0.1)
+    svm_rbf.evaluate(0.5)
 
     n_Set = [1,2,4,8,16,32]
     gmm_full = GMMFull(D, L, n_Set, pca=[5], flag=False)

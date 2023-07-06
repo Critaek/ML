@@ -8,6 +8,8 @@ import scipy.optimize
 import utils.ModelEvaluation as me
 import utils.Plot as plt
 from tqdm import tqdm
+from utils.utils_file import load_test, load_norm_test, load_train, load_norm_train
+from utils.DimReduction import apply_PCA
 
 def logreg_obj(v, DTR, LTR, l, prior):
     w, b = mcol(v[0:-1]), v[-1]
@@ -142,12 +144,8 @@ class LinearRegression(object):
 
         hyperparameter_list = [(l, i) for l in self.lSet for i in self.pca]
 
-        #print("result[0] = prior_t | result[1] = prior_tilde | result[2] = model_name | result[3] = pre-processing | result[4] = PCA | result[5] = ActDCF | result[6] = MinDCF")
-
         for l, i in tqdm(hyperparameter_list, desc="Training LR...", ncols=100):
             LLRs = self.kFold(prior_t, self.raw, l, i)
-            #Score Calibration before estimating DCFs
-            #CalibratedLLRs = sc.calibrate_scores(LLRs, L, prior_t)
 
             for prior_tilde in prior_tilde_set:
                 ActDCF, minDCF = me.printDCFs(self.D, self.L, LLRs, prior_tilde)
@@ -156,12 +154,8 @@ class LinearRegression(object):
                             f"| ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
                 print(f"{prior_t} | {prior_tilde} | {self.type} | Lambda = {l:.2e} | Raw | Uncalibrated | PCA = {i}" + \
                         f"| ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
-                #ActDCF, minDCF = me.printDCFs(D, L, CalibratedLLRs, prior_tilde)
-                #print(prior_t, "|", prior_tilde, "| Linear Regression | Lambda ={:.2e}".format(l), "| Raw | Calibrated | PCA =", pca, "| ActDCF ={0:.3f}".format(ActDCF), "| MinDCF ={0:.3f}".format(minDCF))  
 
             LLRs = self.kFold(prior_t, self.normalized, l, i)
-            #Score Calibration before estimating DCFs
-            #CalibratedLLRs = sc.calibrate_scores(LLRs, L, prior_t)
             for prior_tilde in prior_tilde_set:    
                 ActDCF, minDCF = me.printDCFs(self.D, self.L, LLRs, prior_tilde)
                 if self.print_flag:
@@ -169,10 +163,47 @@ class LinearRegression(object):
                         f"| ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
                 print(f"{prior_t} | {prior_tilde} | {self.type} | Lambda = {l:.2e} | Normalized | Uncalibrated | PCA = {i}" + \
                         f"| ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
-                
-                #ActDCF, minDCF = me.printDCFs(D, L, CalibratedLLRs, prior_tilde)
-                #print(prior_t, "|", prior_tilde, "| Linear Regression | Lambda ={:.2e}".format(l), "| Normalized | Calibrated | PCA =", pca, "| ActDCF ={0:.3f}".format(ActDCF), "| MinDCF ={0:.3f}".format(minDCF))
 
+    def evaluate(self, prior_t):
+        prior_tilde_set = [0.1, 0.5]
+
+        string = str(prior_t).replace(".","")
+
+        file_path = f"data/FinalEvaluation/LinRegression_{string}.txt"
+
+        f = open(file_path, "w")
+
+        D_test, L_test = load_test()
+        norm_D_test, norm_L_test = load_norm_test()
+        D, L = load_train()
+        norm_D, L = load_norm_train()
+
+        hyperparameter_list = [(l, i) for l in self.lSet for i in self.pca]
+
+        #print("result[0] = prior_t | result[1] = prior_tilde | result[2] = model_name | result[3] = pre-processing | result[4] = PCA | result[5] = ActDCF | result[6] = MinDCF")
+
+        for l, i in tqdm(hyperparameter_list, desc="Training LR...", ncols=100):
+            D_pca, D_test_pca = apply_PCA(D, D_test, i)
+            LLRs = self.lr(D_pca, L, D_test_pca, l, prior_t)
+
+            for prior_tilde in prior_tilde_set:
+                ActDCF, minDCF = me.printDCFs(D_test_pca, L_test, LLRs, prior_tilde)
+                if self.print_flag:
+                    print(f"{prior_t} | {prior_tilde} | {self.type} | Lambda = {l:.2e} | Raw | Uncalibrated | PCA = {i}" + \
+                            f"| ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
+                print(f"{prior_t} | {prior_tilde} | {self.type} | Lambda = {l:.2e} | Raw | Uncalibrated | PCA = {i}" + \
+                        f"| ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)  
+
+            norm_D_pca, norm_D_test_pca = apply_PCA(norm_D, norm_D_test, i)
+            LLRs = self.lr(norm_D_pca, L, norm_D_test_pca, l, prior_t)
+
+            for prior_tilde in prior_tilde_set:    
+                ActDCF, minDCF = me.printDCFs(norm_D_test_pca, norm_L_test, LLRs, prior_tilde)
+                if self.print_flag:
+                    print(f"{prior_t} | {prior_tilde} | {self.type} | Lambda = {l:.2e} | Normalized | Uncalibrated | PCA = {i}" + \
+                        f"| ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
+                print(f"{prior_t} | {prior_tilde} | {self.type} | Lambda = {l:.2e} | Normalized | Uncalibrated | PCA = {i}" + \
+                        f"| ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
 
 class QuadraticRegression(object):
     def __init__(self, D, L, lSet,  pca: Optional[List[int]] = None, flag: Optional[bool] = True):
@@ -290,6 +321,54 @@ class QuadraticRegression(object):
             LLRs = self.kFold(prior_t, self.normalized, l, i)
             for prior_tilde in prior_tilde_set:    
                 ActDCF, minDCF = me.printDCFs(self.D, self.L, LLRs, prior_tilde)
+                if self.print_flag:
+                    print(f"{prior_t} | {prior_tilde} | {self.type} | Lambda = {l:.2e} | Normalized | PCA = {i}" + \
+                          f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
+                print(f"{prior_t} | {prior_tilde} | {self.type} | Lambda = {l:.2e} | Normalized | PCA = {i}" + \
+                      f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
+
+
+    def evaluate(self, prior_t):
+        prior_tilde_set = [0.1, 0.5]
+
+        string = str(prior_t).replace(".","")
+
+        file_path = f"data/FinalEvaluation/QuadRegression_{string}.txt"
+
+        f = open(file_path, "w")
+
+        D_test, L_test = load_test()
+        norm_D_test, norm_L_test = load_norm_test()
+        D, L = load_train()
+        norm_D, L = load_norm_train()
+
+        hyperparameter_list = [(l, i) for l in self.lSet for i in self.pca]
+
+        # As in the k_fold approach, we first expand the features and then apply PCA, this implies that the same
+        # procedure has been adopted for both training and evaluation
+        
+        D = self.expandFeature(D)
+        D_test = self.expandFeature(D_test)
+        norm_D = self.expandFeature(norm_D)
+        norm_D_test = self.expandFeature(norm_D_test)
+
+        for l, i in tqdm(hyperparameter_list, desc="Training QR...", ncols=100):
+            D_pca, D_test_pca = apply_PCA(D, D_test, i)
+            LLRs = self.qr(D_pca, L, D_test_pca, l, prior_t)
+
+            for prior_tilde in prior_tilde_set:
+                ActDCF, minDCF = me.printDCFs(D_test_pca, L_test, LLRs, prior_tilde)
+                if self.print_flag:    
+                    print(f"{prior_t} | {prior_tilde} | {self.type} | Lambda = {l:.2e} | Raw | PCA = {i}" + \
+                          f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
+                print(f"{prior_t} | {prior_tilde} | {self.type} | Lambda = {l:.2e} | Raw | PCA = {i}" + \
+                      f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
+
+            norm_D_pca, norm_D_test_pca = apply_PCA(norm_D, norm_D_test, i)
+            LLRs = self.qr(norm_D_pca, L, norm_D_test_pca, l, prior_t)
+
+            for prior_tilde in prior_tilde_set:    
+                ActDCF, minDCF = me.printDCFs(norm_D_test_pca, norm_L_test, LLRs, prior_tilde)
                 if self.print_flag:
                     print(f"{prior_t} | {prior_tilde} | {self.type} | Lambda = {l:.2e} | Normalized | PCA = {i}" + \
                           f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")

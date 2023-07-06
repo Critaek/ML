@@ -1,0 +1,8 @@
+0.1 | 0.1 | SVM Poly | K = 0.0 | C = 0.01 | d = 4.0 | c = 0.0 | Raw | Uncalibrated | PCA = 5 | ActDCF = 3.895 | MinDCF = 1.0
+0.1 | 0.1 | SVM Poly | K = 0.0 | C = 0.01 | d = 4.0 | c = 0.0 | Raw | Calibrated | PCA = 5 | ActDCF = 7.968 | MinDCF = 1.0
+0.1 | 0.5 | SVM Poly | K = 0.0 | C = 0.01 | d = 4.0 | c = 0.0 | Raw | Uncalibrated | PCA = 5 | ActDCF = 0.753 | MinDCF = 0.49
+0.1 | 0.5 | SVM Poly | K = 0.0 | C = 0.01 | d = 4.0 | c = 0.0 | Raw | Calibrated | PCA = 5 | ActDCF = 0.885 | MinDCF = 0.539
+0.1 | 0.1 | SVM Poly | K = 0.0 | C = 0.01 | d = 4.0 | c = 0.0 | Normalized | Uncalibrated | PCA = 5 | ActDCF = 1.0 | MinDCF = 0.827
+0.1 | 0.1 | SVM Poly | K = 0.0 | C = 0.01 | d = 4.0 | c = 0.0 | Normalized | Calibrated | PCA = 5 | ActDCF = 1.927 | MinDCF = 0.835
+0.1 | 0.5 | SVM Poly | K = 0.0 | C = 0.01 | d = 4.0 | c = 0.0 | Normalized | Uncalibrated | PCA = 5 | ActDCF = 1.0 | MinDCF = 0.227
+0.1 | 0.5 | SVM Poly | K = 0.0 | C = 0.01 | d = 4.0 | c = 0.0 | Normalized | Calibrated | PCA = 5 | ActDCF = 0.244 | MinDCF = 0.224

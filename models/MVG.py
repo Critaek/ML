@@ -2,10 +2,12 @@ from utils.utils_file import mcol, vrow
 import numpy
 import math
 import utils.DimReduction as dr
+from utils.DimReduction import apply_PCA
 from k_fold_utilities.Raw import loadRawFolds
 from k_fold_utilities.Normalized import loadNormFolds
 import utils.ModelEvaluation as me
 from typing import List, Optional
+from utils.utils_file import load_test, load_norm_test, load_train, load_norm_train
 
 def meanAndCovMat(X):
     N = X.shape[1]
@@ -91,6 +93,37 @@ class MultiVariate(object):
                     print(f"{prior_tilde} | {self.type} | Normalized | PCA = {i} | actDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF, 3)}")
                 print(f"{prior_tilde} | {self.type} | Normalized | PCA = {i} | actDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF, 3)}", file=f)
 
+    def evaluate(self):
+        prior_tilde_set = [0.1, 0.5]
+
+        file_path = "data/FinalEvaluation/MVG_Full.txt"
+
+        f = open(file_path, "w")
+
+        D_test, L_test = load_test()
+        norm_D_test, norm_L_test = load_norm_test()
+        D, L = load_train()
+        norm_D, L = load_norm_train()
+
+        for i in self.pca:
+            D_pca, D_test_pca = apply_PCA(D, D_test, i)
+            LLRs = self.MultiV(D_pca, L, D_test_pca)
+            for prior_tilde in prior_tilde_set:
+                ActDCF, minDCF = me.printDCFs(D_test_pca, L_test, LLRs, prior_tilde)
+                if self.print_flag:  
+                    print(f"{prior_tilde} | {self.type} | Raw | PCA = {i} | actDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF, 3)}")
+                print(f"{prior_tilde} | {self.type} | Raw | PCA = {i} | actDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF, 3)}", file=f)
+
+        for i in self.pca:
+            norm_D_pca, norm_D_test_pca = apply_PCA(norm_D, norm_D_test, i)
+            LLRs = self.MultiV(norm_D_pca, L, norm_D_test_pca)
+            for prior_tilde in prior_tilde_set:
+                ActDCF, minDCF = me.printDCFs(norm_D_test_pca, norm_L_test, LLRs, prior_tilde)  
+                if self.print_flag:
+                    print(f"{prior_tilde} | {self.type} | Normalized | PCA = {i} | actDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF, 3)}")
+                print(f"{prior_tilde} | {self.type} | Normalized | PCA = {i} | actDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF, 3)}", file=f)
+
+
 
 class Tied(object):
     def __init__(self, D, L, pca: Optional[List[int]] = None, flag: Optional[bool] = True):
@@ -163,6 +196,36 @@ class Tied(object):
                 if self.print_flag:
                     print(f"{prior_tilde} | {self.type} | Normalized | PCA = {i} | actDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF, 3)}")
                 print(f"{prior_tilde} | {self.type} | Normalized | PCA = {i} | actDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF, 3)}", file=f)
+    
+    def evaluate(self):
+        prior_tilde_set = [0.1, 0.5]
+
+        file_path = "data/FinalEvaluation/MVG_Tied.txt"
+
+        f = open(file_path, "w")
+
+        D_test, L_test = load_test()
+        norm_D_test, norm_L_test = load_norm_test()
+        D, L = load_train()
+        norm_D, L = load_norm_train()
+
+        for i in self.pca:
+            D_pca, D_test_pca = apply_PCA(D, D_test, i)
+            LLRs = self.Tied(D_pca, L, D_test_pca)
+            for prior_tilde in prior_tilde_set:
+                ActDCF, minDCF = me.printDCFs(D_test_pca, L_test, LLRs, prior_tilde)
+                if self.print_flag:  
+                    print(f"{prior_tilde} | {self.type} | Raw | PCA = {i} | actDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF, 3)}")
+                print(f"{prior_tilde} | {self.type} | Raw | PCA = {i} | actDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF, 3)}", file=f)
+
+        for i in self.pca:
+            norm_D_pca, norm_D_test_pca = apply_PCA(norm_D, norm_D_test, i)
+            LLRs = self.Tied(norm_D_pca, L, norm_D_test_pca)
+            for prior_tilde in prior_tilde_set:
+                ActDCF, minDCF = me.printDCFs(norm_D_test_pca, norm_L_test, LLRs, prior_tilde)  
+                if self.print_flag:
+                    print(f"{prior_tilde} | {self.type} | Normalized | PCA = {i} | actDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF, 3)}")
+                print(f"{prior_tilde} | {self.type} | Normalized | PCA = {i} | actDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF, 3)}", file=f)
 
 class Bayes(object):
     def __init__(self, D, L, pca: Optional[List[int]] = None, flag: Optional[bool] = True):
@@ -229,5 +292,35 @@ class Bayes(object):
             for prior_tilde in prior_tilde_set:
                 ActDCF, minDCF = me.printDCFs(self.D, self.L, LLRs, prior_tilde) 
                 if self.print_flag: 
+                    print(f"{prior_tilde} | {self.type} | Normalized | PCA = {i} | actDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF, 3)}")
+                print(f"{prior_tilde} | {self.type} | Normalized | PCA = {i} | actDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF, 3)}", file=f)
+
+    def evaluate(self):
+        prior_tilde_set = [0.1, 0.5]
+
+        file_path = "data/FinalEvaluation/MVG_Bayes.txt"
+
+        f = open(file_path, "w")
+
+        D_test, L_test = load_test()
+        norm_D_test, norm_L_test = load_norm_test()
+        D, L = load_train()
+        norm_D, L = load_norm_train()
+
+        for i in self.pca:
+            D_pca, D_test_pca = apply_PCA(D, D_test, i)
+            LLRs = self.Bayes(D_pca, L, D_test_pca)
+            for prior_tilde in prior_tilde_set:
+                ActDCF, minDCF = me.printDCFs(D_test_pca, L_test, LLRs, prior_tilde)
+                if self.print_flag:  
+                    print(f"{prior_tilde} | {self.type} | Raw | PCA = {i} | actDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF, 3)}")
+                print(f"{prior_tilde} | {self.type} | Raw | PCA = {i} | actDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF, 3)}", file=f)
+
+        for i in self.pca:
+            norm_D_pca, norm_D_test_pca = apply_PCA(norm_D, norm_D_test, i)
+            LLRs = self.Bayes(norm_D_pca, L, norm_D_test_pca)
+            for prior_tilde in prior_tilde_set:
+                ActDCF, minDCF = me.printDCFs(norm_D_test_pca, norm_L_test, LLRs, prior_tilde)  
+                if self.print_flag:
                     print(f"{prior_tilde} | {self.type} | Normalized | PCA = {i} | actDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF, 3)}")
                 print(f"{prior_tilde} | {self.type} | Normalized | PCA = {i} | actDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF, 3)}", file=f)

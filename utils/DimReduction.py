@@ -23,3 +23,10 @@ def PCA_P(D, m):
     P = U[:, ::-1][:, 0:m]
 
     return P
+
+def apply_PCA(DTR, DTE, pca):
+    P = PCA_P(DTR, pca)
+    DTR = numpy.dot(P.T, DTR)
+    DTE = numpy.dot(P.T, DTE)
+
+    return DTR, DTE
