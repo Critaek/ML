@@ -141,8 +141,7 @@ class SVMLinear(object):
 
         plt.plotTwoDCFs(self.C_Set, normalized05, normalized01, "C", "Normalized", norm_plot_file, flag=flag)
         plt.plotTwoDCFs(self.C_Set, raw05, raw01, "C", "Raw", raw_plot_file, flag=flag)
-
-    
+ 
     def train(self, prior_t): #K relativo al modello, non k_fold
         prior_tilde_set = [0.1, 0.5, 0.9]
 
@@ -628,6 +627,7 @@ class SVMRBF(object):
         for line in lines:
             DataType = line[6]
             Cal = line[7]
+            PCA = line[8]
             prior_t = float(line[0])
             pi_tilde = float(line[1])
             K = line[3]
@@ -635,7 +635,7 @@ class SVMRBF(object):
             gamma = float(line[5][8:])
             minDCF = float(line[10][8:])
 
-            if (prior_t == 0.5 and Cal == "Uncalibrated" and pi_tilde == 0.5):
+            if (prior_t == 0.5 and Cal == "Uncalibrated" and pi_tilde == 0.5 and PCA == "PCA = 6"):
                 if (K == Best_K):
                     if(DataType == "Raw"):
                         if(gamma == self.gamma_Set[0]):

@@ -22,10 +22,7 @@
 0.1 | GMM Diagonal | nComponents = 4 | Normalized | Calibrated | PCA = 5 | ActDCF = 3.311 | MinDCF = 0.884
 0.5 | GMM Diagonal | nComponents = 4 | Normalized | Uncalibrated | PCA = 5 | ActDCF = 1.0 | MinDCF = 0.44
 0.5 | GMM Diagonal | nComponents = 4 | Normalized | Calibrated | PCA = 5 | ActDCF = 0.64 | MinDCF = 0.444
-0.1 | GMM Diagonal | nComponents = 8 | Raw | Uncalibrated | PCA = 5 | ActDCF = 0.847 | MinDCF = 0.481
-0.1 | GMM Diagonal | nComponents = 8 | Raw | Calibrated | PCA = 5 | ActDCF = 1.176 | MinDCF = 0.491
-0.5 | GMM Diagonal | nComponents = 8 | Raw | Uncalibrated | PCA = 5 | ActDCF = 0.161 | MinDCF = 0.146
-0.5 | GMM Diagonal | nComponents = 8 | Raw | Calibrated | PCA = 5 | ActDCF = 0.206 | MinDCF = 0.145
+
 0.1 | GMM Diagonal | nComponents = 8 | Normalized | Uncalibrated | PCA = 5 | ActDCF = 0.998 | MinDCF = 0.92
 0.1 | GMM Diagonal | nComponents = 8 | Normalized | Calibrated | PCA = 5 | ActDCF = 4.276 | MinDCF = 0.917
 0.5 | GMM Diagonal | nComponents = 8 | Normalized | Uncalibrated | PCA = 5 | ActDCF = 0.998 | MinDCF = 0.488

@@ -76,9 +76,9 @@ if __name__ == "__main__":
     gamma_Set = numpy.logspace(-3,-1, num = 3)
     svm_rbf = SVMRBF(D, L, K_Set, C_Set, gamma_Set, pca=[5, 6], flag=False)
     #svm_rbf.train(0.5)
-    #svm_rbf.plot(False)
-    svm_rbf.evaluate(0.1)
-    svm_rbf.evaluate(0.5)
+    svm_rbf.plot(False)
+    #svm_rbf.evaluate(0.1)
+    #svm_rbf.evaluate(0.5)
 
     n_Set = [1,2,4,8,16,32]
     gmm_full = GMMFull(D, L, n_Set, pca=[5], flag=False)

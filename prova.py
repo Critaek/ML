@@ -1,6 +1,4 @@
-import time
-from utils.utils_file import load_test, load_train
-from k_fold_utilities.Normalized import NormDTE
+# Just a simple script to extract THE best from some file, just not to do it by hand
 
 file = "data/SVMpoly_4dim_01.txt"
 
@@ -22,9 +20,3 @@ for i, el in enumerate(elements):
 
 minimo = min(el3, key=lambda x: x[1])
 print(minimo)
-
-start = time.time()
-D, L = load_train()
-D_test, L_test = load_test()
-n_D_test = NormDTE(D, D_test)
-print(time.time() - start)
