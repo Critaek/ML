@@ -57,8 +57,8 @@ if __name__ == "__main__":
     svm_lin = SVMLinear(D, L, K_Set, C_Set, pca=[5], flag = False)
     #svm_lin.train(0.1)
     #svm_lin.plot(False)
-    #svm_lin.evaluate(0.1)
-    #svm_lin.evaluate(0.5)
+    svm_lin.evaluate(0.1)
+    svm_lin.evaluate(0.5)
 
 
     K_Set = numpy.array([0.0, 1.0, 10.0])
@@ -68,8 +68,8 @@ if __name__ == "__main__":
     svm_poly = SVMPoly(D, L, K_Set, C_Set, [4.0], c_Set, pca=[5,6], flag=False)
     #svm_poly.train(0.1)
     #svm_poly.plot(False)
-    #svm_poly.evaluate(0.1)
-    #svm_poly.evaluate(0.5)
+    svm_poly.evaluate(0.1)
+    svm_poly.evaluate(0.5)
 
     K_Set = numpy.array([0.0, 1.0, 10.0])
     C_Set = numpy.logspace(-2,0, num = 5)

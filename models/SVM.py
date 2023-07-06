@@ -509,7 +509,7 @@ class SVMRBF(object):
             assert max(pca) <= D.shape[0], f"pca must be smaller than {D.shape[0]}"
             self.pca = pca
         self.print_flag = flag
-        self.print_file = "data/Results/SVMRBF.txt"
+        self.print_file = "data/Results_01/SVMRBF.txt"
 
     def SVM_RBF(self, DTR, LTR, DTE, LTE, K, C, gamma, prior_t):
         Z = numpy.zeros(LTR.shape)
