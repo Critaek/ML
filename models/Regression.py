@@ -182,7 +182,7 @@ class LinearRegression(object):
 
         #print("result[0] = prior_t | result[1] = prior_tilde | result[2] = model_name | result[3] = pre-processing | result[4] = PCA | result[5] = ActDCF | result[6] = MinDCF")
 
-        for l, i in tqdm(hyperparameter_list, desc="Training LR...", ncols=100):
+        for l, i in tqdm(hyperparameter_list, desc="Evaluating LR...", ncols=100):
             D_pca, D_test_pca = apply_PCA(D, D_test, i)
             LLRs = self.lr(D_pca, L, D_test_pca, l, prior_t)
 
@@ -352,7 +352,7 @@ class QuadraticRegression(object):
         norm_D = self.expandFeature(norm_D)
         norm_D_test = self.expandFeature(norm_D_test)
 
-        for l, i in tqdm(hyperparameter_list, desc="Training QR...", ncols=100):
+        for l, i in tqdm(hyperparameter_list, desc="Evaluating QR...", ncols=100):
             D_pca, D_test_pca = apply_PCA(D, D_test, i)
             LLRs = self.qr(D_pca, L, D_test_pca, l, prior_t)
 

@@ -57,9 +57,8 @@ if __name__ == "__main__":
     svm_lin = SVMLinear(D, L, K_Set, C_Set, pca=[5], flag = False)
     #svm_lin.train(0.1)
     #svm_lin.plot(False)
-    svm_lin.evaluate(0.1)
-    svm_lin.evaluate(0.5)
-
+    #svm_lin.evaluate(0.1)
+    #svm_lin.evaluate(0.5)
 
     K_Set = numpy.array([0.0, 1.0, 10.0])
     C_Set = numpy.logspace(-2,0, num = 5)
@@ -68,24 +67,28 @@ if __name__ == "__main__":
     svm_poly = SVMPoly(D, L, K_Set, C_Set, [4.0], c_Set, pca=[5,6], flag=False)
     #svm_poly.train(0.1)
     #svm_poly.plot(False)
-    svm_poly.evaluate(0.1)
-    svm_poly.evaluate(0.5)
+    #svm_poly.evaluate(0.1)
+    #svm_poly.evaluate(0.5)
 
     K_Set = numpy.array([0.0, 1.0, 10.0])
     C_Set = numpy.logspace(-2,0, num = 5)
     gamma_Set = numpy.logspace(-3,-1, num = 3)
     svm_rbf = SVMRBF(D, L, K_Set, C_Set, gamma_Set, pca=[5, 6], flag=False)
     #svm_rbf.train(0.5)
-    svm_rbf.plot(False)
+    #svm_rbf.plot(False)
     #svm_rbf.evaluate(0.1)
     #svm_rbf.evaluate(0.5)
 
     n_Set = [1,2,4,8,16,32]
-    gmm_full = GMMFull(D, L, n_Set, pca=[5], flag=False)
+    gmm_full = GMMFull(D, L, n_Set, pca=[5, 6], flag=False)
 
-    gmm_diagonal = GMMDiagonal(D, L, n_Set, pca=[5], flag=False)
+    gmm_diagonal = GMMDiagonal(D, L, n_Set, pca=[5, 6], flag=False)
 
-    gmm_tied = GMMTied(D, L, n_Set, pca=[5], flag=False)
+    gmm_tied = GMMTied(D, L, n_Set, pca=[5, 6], flag=False)
+
+    # Since this models doesn't require much cpu at the same but works solely single threaded,
+    # we can wrap them in a new process to make them go in parallel, thread don't work great in python
+    # when a lot of computation in required
 
     p_full = Process(target=gmm_full.train)
     p_diagonal = Process(target=gmm_diagonal.train)
@@ -102,3 +105,15 @@ if __name__ == "__main__":
     #gmm_full.plot(False)
     #gmm_diagonal.plot(False)
     #gmm_tied.plot(False)
+
+    p2_full = Process(target=gmm_full.evaluate)
+    p2_diagonal = Process(target=gmm_diagonal.evaluate)
+    p2_tied = Process(target=gmm_tied.evaluate)
+
+    p2_full.start()
+    p2_diagonal.start()
+    p2_tied.start()
+
+    p2_full.join()
+    p2_diagonal.join()
+    p2_tied.join()

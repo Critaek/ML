@@ -10,6 +10,8 @@ import utils.ModelEvaluation as me
 from utils.Plot import plotHistGMM
 from tqdm import tqdm
 from utils.Calibration import calibrateScores
+from utils.utils_file import load_test, load_norm_test, load_train, load_norm_train
+from utils.DimReduction import apply_PCA
 
 def meanAndCovMat(X):
     N = X.shape[1]
@@ -144,6 +146,15 @@ class GMMFull(object):
 
         return LLRs
     
+    def calculate_scores(self, DTR, LTR, DTE, n):
+        DTR0 = DTR[:, LTR == 0]
+        DTR1 = DTR[:, LTR == 1]
+        gmm0 = self.GMM_LBG_Full(DTR0, n)
+        gmm1 = self.GMM_LBG_Full(DTR1, n)
+        LLRs = GMM_Scores(DTE, gmm0, gmm1)
+
+        return LLRs
+    
     def plot(self, flag: Optional[bool] = True):
         print("Plotting GMM Full Results...")
         f = open(self.print_file, "r")
@@ -200,6 +211,59 @@ class GMMFull(object):
                 print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Normalized | Uncalibrated | PCA = {i}" + \
                       f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
                 ActDCF, minDCF = me.printDCFs(self.D, labels, CalibratedScores, prior_tilde)
+                if self.print_flag:
+                    print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Normalized | Calibrated | PCA = {i}" + \
+                          f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
+                print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Normalized | Calibrated | PCA = {i}" + \
+                      f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
+                
+    def evaluate(self):
+        prior_tilde_set = [0.1, 0.5]
+
+        file_path = "data/FinalEvaluation/GMMFull.txt"
+
+        f = open(file_path, "w")
+
+        D_test, L_test = load_test()
+        norm_D_test, norm_L_test = load_norm_test()
+        D, L = load_train()
+        norm_D, L = load_norm_train()
+
+        hyperparameter_list = [(int(math.log2(n)), i) for n in self.n_Set for i in self.pca]
+
+        for n, i in tqdm(hyperparameter_list, desc="Evaluating GMM Full...", ncols=100):
+            D_pca, D_test_pca = apply_PCA(D, D_test, i)
+            Scores = self.calculate_scores(D_pca, L, D_test_pca, n)
+            for prior_tilde in prior_tilde_set: 
+                CalibratedScores, labels = calibrateScores(Scores, L_test, prior_tilde)
+                ActDCF, minDCF = me.printDCFs(D_test_pca, L_test, Scores, prior_tilde)
+                if self.print_flag:
+                    print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Raw | Uncalibrated | PCA = {i}" + \
+                          f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
+                print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Raw | Uncalibrated | PCA = {i}" + \
+                      f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
+                
+                ActDCF, minDCF = me.printDCFs(D_test_pca, labels, CalibratedScores, prior_tilde)
+                if self.print_flag:
+                    print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Raw | Calibrated | PCA = {i}" + \
+                          f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
+                print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Raw | Calibrated | PCA = {i}" + \
+                      f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
+            
+            norm_D_pca, norm_D_test_pca = apply_PCA(norm_D, norm_D_test, i)
+            Scores = self.calculate_scores(norm_D_pca, L, norm_D_test_pca, n)
+            #Still called LLRs in the printDCFs function, but they are scores with no probabilistic interpretation
+            #We use the same function for every model
+            for prior_tilde in prior_tilde_set: 
+                CalibratedScores, labels = calibrateScores(Scores, norm_L_test, prior_tilde)
+                ActDCF, minDCF = me.printDCFs(norm_D_test_pca, norm_L_test, Scores, prior_tilde)
+                if self.print_flag:
+                    print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Normalized | Uncalibrated | PCA = {i}" + \
+                          f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
+                print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Normalized | Uncalibrated | PCA = {i}" + \
+                      f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
+                
+                ActDCF, minDCF = me.printDCFs(norm_D_test_pca, labels, CalibratedScores, prior_tilde)
                 if self.print_flag:
                     print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Normalized | Calibrated | PCA = {i}" + \
                           f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
@@ -304,6 +368,15 @@ class GMMDiagonal(object):
 
         return LLRs
     
+    def calculate_scores(self, DTR, LTR, DTE, n):
+        DTR0 = DTR[:, LTR == 0]
+        DTR1 = DTR[:, LTR == 1]
+        gmm0 = self.GMM_LBG_Diagonal(DTR0, n)
+        gmm1 = self.GMM_LBG_Diagonal(DTR1, n)
+        LLRs = GMM_Scores(DTE, gmm0, gmm1)
+
+        return LLRs
+    
     def plot(self, flag: Optional[bool] = True):
         print("Plotting GMM Diagonal Results...")
         f = open(self.print_file, "r")
@@ -358,6 +431,59 @@ class GMMDiagonal(object):
                 print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Normalized | Uncalibrated | PCA = {i}" + \
                       f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
                 ActDCF, minDCF = me.printDCFs(self.D, labels, CalibratedScores, prior_tilde)
+                if self.print_flag:
+                    print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Normalized | Calibrated | PCA = {i}" + \
+                          f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
+                print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Normalized | Calibrated | PCA = {i}" + \
+                      f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
+
+    def evaluate(self):
+        prior_tilde_set = [0.1, 0.5]
+
+        file_path = "data/FinalEvaluation/GMMDiagonal.txt"
+
+        f = open(file_path, "w")
+
+        D_test, L_test = load_test()
+        norm_D_test, norm_L_test = load_norm_test()
+        D, L = load_train()
+        norm_D, L = load_norm_train()
+
+        hyperparameter_list = [(int(math.log2(n)), i) for n in self.n_Set for i in self.pca]
+
+        for n, i in tqdm(hyperparameter_list, desc="Evaluating GMM Diagonal...", ncols=100):
+            D_pca, D_test_pca = apply_PCA(D, D_test, i)
+            Scores = self.calculate_scores(D_pca, L, D_test_pca, n)
+            for prior_tilde in prior_tilde_set: 
+                CalibratedScores, labels = calibrateScores(Scores, L_test, prior_tilde)
+                ActDCF, minDCF = me.printDCFs(D_test_pca, L_test, Scores, prior_tilde)
+                if self.print_flag:
+                    print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Raw | Uncalibrated | PCA = {i}" + \
+                          f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
+                print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Raw | Uncalibrated | PCA = {i}" + \
+                      f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
+                
+                ActDCF, minDCF = me.printDCFs(D_test_pca, labels, CalibratedScores, prior_tilde)
+                if self.print_flag:
+                    print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Raw | Calibrated | PCA = {i}" + \
+                          f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
+                print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Raw | Calibrated | PCA = {i}" + \
+                      f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
+            
+            norm_D_pca, norm_D_test_pca = apply_PCA(norm_D, norm_D_test, i)
+            Scores = self.calculate_scores(norm_D_pca, L, norm_D_test_pca, n)
+            #Still called LLRs in the printDCFs function, but they are scores with no probabilistic interpretation
+            #We use the same function for every model
+            for prior_tilde in prior_tilde_set: 
+                CalibratedScores, labels = calibrateScores(Scores, norm_L_test, prior_tilde)
+                ActDCF, minDCF = me.printDCFs(norm_D_test_pca, norm_L_test, Scores, prior_tilde)
+                if self.print_flag:
+                    print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Normalized | Uncalibrated | PCA = {i}" + \
+                          f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
+                print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Normalized | Uncalibrated | PCA = {i}" + \
+                      f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
+                
+                ActDCF, minDCF = me.printDCFs(norm_D_test_pca, labels, CalibratedScores, prior_tilde)
                 if self.print_flag:
                     print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Normalized | Calibrated | PCA = {i}" + \
                           f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
@@ -474,6 +600,15 @@ class GMMTied(object):
 
         return LLRs
     
+    def calculate_scores(self, DTR, LTR, DTE, n):
+        DTR0 = DTR[:, LTR == 0]
+        DTR1 = DTR[:, LTR == 1]
+        gmm0 = self.GMM_LBG_Tied(DTR0, n)
+        gmm1 = self.GMM_LBG_Tied(DTR1, n)
+        LLRs = GMM_Scores(DTE, gmm0, gmm1)
+
+        return LLRs
+    
     def plot(self, flag: Optional[bool] = True):
         print("Plotting GMM Tied Results...")
         f = open(self.print_file, "r")
@@ -528,6 +663,59 @@ class GMMTied(object):
                 print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Normalized | Uncalibrated | PCA = {i}" + \
                       f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
                 ActDCF, minDCF = me.printDCFs(self.D, labels, CalibratedScores, prior_tilde)
+                if self.print_flag:
+                    print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Normalized | Calibrated | PCA = {i}" + \
+                          f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
+                print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Normalized | Calibrated | PCA = {i}" + \
+                      f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
+                
+    def evaluate(self):
+        prior_tilde_set = [0.1, 0.5]
+
+        file_path = "data/FinalEvaluation/GMMTied.txt"
+
+        f = open(file_path, "w")
+
+        D_test, L_test = load_test()
+        norm_D_test, norm_L_test = load_norm_test()
+        D, L = load_train()
+        norm_D, L = load_norm_train()
+
+        hyperparameter_list = [(int(math.log2(n)), i) for n in self.n_Set for i in self.pca]
+
+        for n, i in tqdm(hyperparameter_list, desc="Evaluating GMM Tied...", ncols=100):
+            D_pca, D_test_pca = apply_PCA(D, D_test, i)
+            Scores = self.calculate_scores(D_pca, L, D_test_pca, n)
+            for prior_tilde in prior_tilde_set: 
+                CalibratedScores, labels = calibrateScores(Scores, L_test, prior_tilde)
+                ActDCF, minDCF = me.printDCFs(D_test_pca, L_test, Scores, prior_tilde)
+                if self.print_flag:
+                    print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Raw | Uncalibrated | PCA = {i}" + \
+                          f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
+                print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Raw | Uncalibrated | PCA = {i}" + \
+                      f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
+                
+                ActDCF, minDCF = me.printDCFs(D_test_pca, labels, CalibratedScores, prior_tilde)
+                if self.print_flag:
+                    print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Raw | Calibrated | PCA = {i}" + \
+                          f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
+                print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Raw | Calibrated | PCA = {i}" + \
+                      f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
+            
+            norm_D_pca, norm_D_test_pca = apply_PCA(norm_D, norm_D_test, i)
+            Scores = self.calculate_scores(norm_D_pca, L, norm_D_test_pca, n)
+            #Still called LLRs in the printDCFs function, but they are scores with no probabilistic interpretation
+            #We use the same function for every model
+            for prior_tilde in prior_tilde_set: 
+                CalibratedScores, labels = calibrateScores(Scores, norm_L_test, prior_tilde)
+                ActDCF, minDCF = me.printDCFs(norm_D_test_pca, norm_L_test, Scores, prior_tilde)
+                if self.print_flag:
+                    print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Normalized | Uncalibrated | PCA = {i}" + \
+                          f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")
+                print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Normalized | Uncalibrated | PCA = {i}" + \
+                      f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}", file=f)
+                
+                ActDCF, minDCF = me.printDCFs(norm_D_test_pca, labels, CalibratedScores, prior_tilde)
                 if self.print_flag:
                     print(f"{prior_tilde} | {self.type} | nComponents = {2**n} | Normalized | Calibrated | PCA = {i}" + \
                           f" | ActDCF = {round(ActDCF, 3)} | MinDCF = {round(minDCF,3)}")

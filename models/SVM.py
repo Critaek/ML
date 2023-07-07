@@ -200,7 +200,7 @@ class SVMLinear(object):
 
         hyperparameter_list = [(K, C, i) for K in self.K_Set for C in self.C_Set for i in self.pca]
         
-        for K, C, i in tqdm(hyperparameter_list, "Training SVM Linear...", ncols=100):
+        for K, C, i in tqdm(hyperparameter_list, "Evaluating SVM Linear...", ncols=100):
             D_pca, D_test_pca = apply_PCA(D, D_test, i)
             Scores = self.SVMLinear(D_pca, L, D_test_pca, L_test, K, C, prior_t)
             #Still called LLRs in the printDCFs function, but they are scores with no probabilistic interpretation
@@ -451,7 +451,7 @@ class SVMPoly(object):
 
         hyperparameter_list = [(K, C, d, c, i) for K in self.K_Set for C in self.C_Set for d in self.d_Set for c in self.c_Set for i in self.pca]
 
-        for K, C, d, c, i in tqdm(hyperparameter_list, desc="Training SVM Poly...", ncols=100):
+        for K, C, d, c, i in tqdm(hyperparameter_list, desc="Evaluating SVM Poly...", ncols=100):
             D_pca, D_test_pca = apply_PCA(D, D_test, i)
             Scores = self.SVMPoly(D_pca, L, D_test_pca, L_test, K, C, d, c, prior_t)
             CalibratedScores, labels = calibrateScores(Scores, L_test, prior_t)
@@ -716,7 +716,7 @@ class SVMRBF(object):
 
         hyperparameter_list = [(K, C, gamma, i) for K in self.K_Set for C in self.C_Set for gamma in self.gamma_Set for i in self.pca]
 
-        for K, C, gamma, i in tqdm(hyperparameter_list, desc="Training SVM RBF...", ncols=100):
+        for K, C, gamma, i in tqdm(hyperparameter_list, desc="Evaluating SVM RBF...", ncols=100):
             D_pca, D_test_pca = apply_PCA(D, D_test, i)
             Scores = self.SVM_RBF(D_pca, L, D_test_pca, L_test, K, C, gamma, prior_t)
             CalibratedScores, labels = calibrateScores(Scores, L_test, prior_t)
