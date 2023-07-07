@@ -88,7 +88,7 @@ if __name__ == "__main__":
 
     # Since this models doesn't require much cpu at the same but works solely single threaded,
     # we can wrap them in a new process to make them go in parallel, thread don't work great in python
-    # when a lot of computation in required
+    # when a lot of computation in required cause of GIL thread safety implementations
 
     p_full = Process(target=gmm_full.train)
     p_diagonal = Process(target=gmm_diagonal.train)
