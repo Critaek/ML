@@ -54,11 +54,11 @@ if __name__ == "__main__":
 
     K_Set = numpy.array([0.0, 1.0, 10.0])
     C_Set = numpy.logspace(-2,0, num = 10)
-    svm_lin = SVMLinear(D, L, K_Set, C_Set, pca=[5], flag = False)
+    svm_lin = SVMLinear(D, L, K_Set, C_Set, pca=[5,6], flag = False)
     #svm_lin.train(0.1)
     #svm_lin.plot(False)
-    #svm_lin.evaluate(0.1)
-    #svm_lin.evaluate(0.5)
+    svm_lin.evaluate(0.1)
+    svm_lin.evaluate(0.5)
 
     K_Set = numpy.array([0.0, 1.0, 10.0])
     C_Set = numpy.logspace(-2,0, num = 5)
@@ -110,10 +110,10 @@ if __name__ == "__main__":
     p2_diagonal = Process(target=gmm_diagonal.evaluate)
     p2_tied = Process(target=gmm_tied.evaluate)
 
-    p2_full.start()
-    p2_diagonal.start()
-    p2_tied.start()
+    #p2_full.start()
+    #p2_diagonal.start()
+    #p2_tied.start()
 
-    p2_full.join()
-    p2_diagonal.join()
-    p2_tied.join()
+    #p2_full.join()
+    #p2_diagonal.join()
+    #p2_tied.join()
