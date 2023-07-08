@@ -62,13 +62,13 @@ if __name__ == "__main__":
 
     K_Set = numpy.array([0.0, 1.0, 10.0])
     C_Set = numpy.logspace(-2,0, num = 5)
-    d_Set = numpy.array([2.0, 3.0])
+    d_Set = numpy.array([2.0, 3.0, 4.0])
     c_Set = numpy.array([0.0, 1.0])
-    svm_poly = SVMPoly(D, L, K_Set, C_Set, [4.0], c_Set, pca=[5,6], flag=False)
+    svm_poly = SVMPoly(D, L, K_Set, C_Set, d_Set, c_Set, pca=[5,6], flag=False)
     #svm_poly.train(0.1)
     #svm_poly.plot(False)
-    #svm_poly.evaluate(0.1)
-    #svm_poly.evaluate(0.5)
+    svm_poly.evaluate(0.1)
+    svm_poly.evaluate(0.5)
 
     K_Set = numpy.array([0.0, 1.0, 10.0])
     C_Set = numpy.logspace(-2,0, num = 5)
