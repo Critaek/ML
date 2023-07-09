@@ -66,7 +66,7 @@ if __name__ == "__main__":
     c_Set = numpy.array([0.0, 1.0])
     svm_poly = SVMPoly(D, L, K_Set, C_Set, d_Set, c_Set, pca=[5,6], flag=False)
     #svm_poly.train(0.1)
-    #svm_poly.plot(False)
+    svm_poly.plot(False)
     svm_poly.evaluate(0.1)
     svm_poly.evaluate(0.5)
 
